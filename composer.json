@@ -1,0 +1,17 @@
+{
+    "name": "luimedi/remap",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Luimedi\\Remap\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Luis Medina",
+            "email": "6675716+luimedi@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}
