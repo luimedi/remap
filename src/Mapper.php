@@ -3,6 +3,8 @@
 namespace Luimedi\Remap;
 
 use InvalidArgumentException;
+use Luimedi\Remap\Attribute\MapGetter;
+use Luimedi\Remap\Attribute\MapProperty;
 
 class Mapper 
 {
@@ -108,7 +110,7 @@ class Mapper
         }
 
         if (class_exists($resolver)) {
-            return $type;
+            return $resolver;
         }
 
         throw new InvalidArgumentException(
@@ -120,6 +122,11 @@ class Mapper
      */
     public function getDefaultEngine(): Engine
     {
-        return new Engine();
+        return new Engine(
+            [
+                MapGetter::class,
+                MapProperty::class,
+            ]
+        );
     }
 }
