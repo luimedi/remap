@@ -3,7 +3,9 @@
 namespace Luimedi\Remap;
 
 use InvalidArgumentException;
+use Luimedi\Remap\Attribute\MapInterface;
 use ReflectionClass;
+use ReflectionException;
 
 class Engine
 {
@@ -20,12 +22,11 @@ class Engine
         $this->casters = $casters;
     }
 
+    /**
+     * @throws ReflectionException if the target type class does not exist
+     */
     public function execute(mixed $from, string $type, Context $context): mixed
     {
-        if (!class_exists($type)) {
-            throw new InvalidArgumentException("Target class $type does not exist.");
-        }
-
         $reflectionClass = new ReflectionClass($type);
         $constructor = $reflectionClass->getConstructor();
         $parameters = $constructor->getParameters();
@@ -42,7 +43,10 @@ class Engine
                 }
 
                 $instance = $attribute->newInstance();
-                $parameterValues[$name] = $instance->map($from, $context);
+                
+                if ($instance instanceof MapInterface) {
+                    $parameterValues[$name] = $instance->map($from, $context);
+                } 
             }
         }
 
