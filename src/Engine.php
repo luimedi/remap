@@ -24,6 +24,8 @@ class Engine
     }
 
     /**
+     * Executes the mapping process from the source object to an instance of the target type.
+     * 
      * @throws ReflectionException if the target type class does not exist
      */
     public function execute(mixed $from, string $type, Context $context): mixed
@@ -34,6 +36,16 @@ class Engine
         return $instance;
     }
 
+    /**
+     * Creates a new instance of the target class by mapping its constructor parameters.
+     *
+     * @param mixed $from The source object to map from.
+     * @param ReflectionClass $reflectionClass The reflection of the target class.
+     * @param Context $context The contextual information for the mapping process.
+     * @return mixed A new instance of the target class with mapped parameters.
+     * 
+     * @throws InvalidArgumentException if a required parameter cannot be mapped.
+     */
     private function newInstance(mixed $from, ReflectionClass $reflectionClass, Context $context): mixed
     {
         $constructor = $reflectionClass->getConstructor();
@@ -57,9 +69,23 @@ class Engine
                     $parameterValues[$name] = $instance->map($from, $context);
                 }
             }
-        }
+        };
 
-        // Now let's apply any casters if needed
+        return $reflectionClass->newInstanceArgs(
+            $this->applyCasters($parameterValues, $parameters));
+    }
+
+    /**
+     * Applies casters to the parameter values based on their attributes.
+     *
+     * @param array<string, mixed> $values The current parameter values.
+     * @param array<\ReflectionParameter> $parameters The constructor parameters.
+     * @return array<string, mixed> The parameter values after applying casters.
+     * 
+     * @throws InvalidArgumentException if a caster is applied to a parameter without a value.
+     */
+    protected function applyCasters(array $values, array $parameters): array
+    {
         foreach ($parameters as $parameter) {
             $name = $parameter->getName();
             $attributes = $parameter->getAttributes();
@@ -72,14 +98,14 @@ class Engine
                 $instance = $attribute->newInstance();
                 
                 if ($instance instanceof CastInterface) {
-                    if (!array_key_exists($name, $parameterValues)) {
+                    if (!array_key_exists($name, $values)) {
                         throw new InvalidArgumentException("Cannot cast parameter '$name' because it has no value.");
                     }
-                    $parameterValues[$name] = $instance->cast($parameterValues[$name]);
+                    $values[$name] = $instance->cast($values[$name]);
                 }
             }
         }
 
-        return $reflectionClass->newInstanceArgs($parameterValues);
+        return $values;
     }
 }
