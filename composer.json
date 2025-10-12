@@ -7,11 +7,19 @@
             "Luimedi\\Remap\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Luis Medina",
             "email": "6675716+luimedi@users.noreply.github.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^12"
+    }
 }
