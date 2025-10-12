@@ -5,6 +5,7 @@ namespace Luimedi\Remap;
 use InvalidArgumentException;
 use Luimedi\Remap\Attribute\MapGetter;
 use Luimedi\Remap\Attribute\MapProperty;
+use Luimedi\Remap\Cast\CastDateTime;
 
 class Mapper 
 {
@@ -126,6 +127,9 @@ class Mapper
             [
                 MapGetter::class,
                 MapProperty::class,
+            ],
+            [
+                CastDateTime::class
             ]
         );
     }

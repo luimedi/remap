@@ -2,10 +2,12 @@
 
 namespace Tests\Demo;
 
+use DateTimeInterface;
+
 class Input
 {
     public function __construct(
         public string $name,
-        public int $age = 30
+        public DateTimeInterface $birthdate,
     ) {}
 }
