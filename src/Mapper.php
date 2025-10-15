@@ -32,7 +32,7 @@ class Mapper
     public function __construct(?Context $context = null, ?Engine $engine = null)
     {
         $this->context = $context ?? new Context();
-        $this->engine = $engine ?? $this->getDefaultEngine();
+        $this->engine = $engine ?? new Engine();
     }
 
     /**
@@ -116,21 +116,5 @@ class Mapper
 
         throw new InvalidArgumentException(
             "Cannot resolve binding for {$type}");
-    }
-
-    /**
-     * Provides a default engine instance.
-     */
-    public function getDefaultEngine(): Engine
-    {
-        return new Engine(
-            [
-                MapGetter::class,
-                MapProperty::class,
-            ],
-            [
-                CastDateTime::class
-            ]
-        );
     }
 }

@@ -10,19 +10,6 @@ use ReflectionException;
 
 class Engine
 {
-    protected array $attributes = [];
-    protected array $casters = [];
-
-    /**
-     * @param array<class-string<\Attribute>> $attributes
-     * @param array<class-string<Caster>> $casters
-     */
-    public function __construct(array $attributes = [], array $casters = [])
-    {
-        $this->attributes = $attributes;
-        $this->casters = $casters;
-    }
-
     /**
      * Executes the mapping process from the source object to an instance of the target type.
      * 
@@ -59,10 +46,6 @@ class Engine
             $attributes = $parameter->getAttributes();
 
             foreach ($attributes as $attribute) {
-                if (!in_array($attribute->getName(), $this->attributes, true)) {
-                    continue;
-                }
-
                 $instance = $attribute->newInstance();
                 
                 if ($instance instanceof MapInterface) {
@@ -91,10 +74,6 @@ class Engine
             $attributes = $parameter->getAttributes();
 
             foreach ($attributes as $attribute) {
-                if (!in_array($attribute->getName(), $this->casters, true)) {
-                    continue;
-                }
-
                 $instance = $attribute->newInstance();
                 
                 if ($instance instanceof CastInterface) {
