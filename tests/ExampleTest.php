@@ -20,5 +20,6 @@ class ExampleTest extends TestCase
 
         $this->assertSame('Luis', $result->name);
         $this->assertSame('1988-01-01T00:00:00+00:00', $result->birthdate);
+        $this->assertSame('demo', $result->type);
     }
 }

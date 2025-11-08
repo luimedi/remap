@@ -2,18 +2,21 @@
 
 namespace Tests\Demo;
 
+use Luimedi\Remap\Attribute\Cast\CastDateTime;
+use Luimedi\Remap\Attribute\ConstructorMapper;
 use Luimedi\Remap\Attribute\MapGetter;
 use Luimedi\Remap\Attribute\MapProperty;
-use Luimedi\Remap\Cast\CastDateTime;
-use Luimedi\Remap\Cast\CastDateTimeAtom;
 
+#[ConstructorMapper]
 class Output
 {
     public function __construct(
         #[MapProperty(source: 'name')]
         public string $name,
         #[MapProperty(source: 'birthdate')]
-        #[CastDateTime()]
+        #[CastDateTime]
         public string $birthdate,
+        #[MapGetter(source: 'getType')]
+        public string $type
     ) {}
 }

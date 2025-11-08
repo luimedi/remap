@@ -1,6 +1,6 @@
 <?php
 
-namespace Luimedi\Remap\Cast;
+namespace Luimedi\Remap\Attribute\Cast;
 
 interface CastInterface
 {
