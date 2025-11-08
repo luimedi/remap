@@ -9,7 +9,7 @@ use Luimedi\Remap\Cast\CastInterface;
 use ReflectionClass;
 use ReflectionException;
 
-class Engine
+class Engine implements EngineInterface
 {
     /**
      * @var array<string, string|callable>

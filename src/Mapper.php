@@ -13,18 +13,18 @@ class Mapper
      * This holds contextual information for the mapping process.
      * Is passed as argument to resolvers and mappers.
      */
-    protected Context $context;
+    protected ContextInterface $context;
 
     /**
      * The engine responsible for executing the mapping reading 
      * the attributes from the target class.
      */
-    protected Engine $engine;
+    protected EngineInterface $engine;
 
     /**
      * Initializes the Mapper with an optional context.
      */
-    public function __construct(?Context $context = null, ?Engine $engine = null)
+    public function __construct(?ContextInterface $context = null, ?EngineInterface $engine = null)
     {
         $this->engine = $engine ?? new Engine();
         $this->setContext($context ?? new Context());

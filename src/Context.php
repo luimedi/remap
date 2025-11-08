@@ -2,13 +2,12 @@
 
 namespace Luimedi\Remap;
 
-use ArrayAccess;
+
 use ArrayIterator;
-use Countable;
-use IteratorAggregate;
+
 use Traversable;
 
-class Context implements ArrayAccess, IteratorAggregate, Countable
+class Context implements ContextInterface
 {
     protected array $data = [];
 
