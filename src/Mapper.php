@@ -3,9 +3,6 @@
 namespace Luimedi\Remap;
 
 use InvalidArgumentException;
-use Luimedi\Remap\Attribute\MapGetter;
-use Luimedi\Remap\Attribute\MapProperty;
-use Luimedi\Remap\Cast\CastDateTime;
 
 class Mapper 
 {
@@ -56,7 +53,7 @@ class Mapper
     /**
      * Sets the entire context object.
      */
-    public function setContext(Context $context): static
+    public function setContext(ContextInterface $context): static
     {
         $this->context = $context;
         $this->withContext('__engine__', $this->engine);
@@ -67,7 +64,7 @@ class Mapper
     /**
      * Retrieves the current context.
      */
-    public function getContext(): Context
+    public function getContext(): ContextInterface
     {
         return $this->context;
     }

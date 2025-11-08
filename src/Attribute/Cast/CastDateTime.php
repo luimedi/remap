@@ -5,6 +5,7 @@ namespace Luimedi\Remap\Attribute\Cast;
 use Attribute;
 use DateTime;
 use DateTimeInterface;
+use Luimedi\Remap\ContextInterface;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
 class CastDateTime implements CastInterface
@@ -13,7 +14,7 @@ class CastDateTime implements CastInterface
     {
     }
 
-    public function cast(mixed $value): mixed
+    public function cast(mixed $value, ContextInterface $context): mixed
     {
         if ($value instanceof DateTimeInterface) {
             return $value->format(DateTime::ATOM);

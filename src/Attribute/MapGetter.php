@@ -3,8 +3,7 @@
 namespace Luimedi\Remap\Attribute;
 
 use Attribute;
-use Luimedi\Remap\Cast\CastInterface;
-use Luimedi\Remap\Context;
+use Luimedi\Remap\ContextInterface;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
 class MapGetter implements MapInterface
@@ -14,7 +13,7 @@ class MapGetter implements MapInterface
         //
     }
 
-    public function map(mixed $from, Context $context): mixed
+    public function map(mixed $from, ContextInterface $context): mixed
     {
         return $from->{$this->source}();
     }

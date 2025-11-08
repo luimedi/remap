@@ -20,7 +20,7 @@ class Engine implements EngineInterface
      * Binds a source type to a target type or a resolver function.
      * 
      * @param string $abstract The source type (class name or 'type:<type>').
-     * @param string|callable($object, Context $context):string $resolver The target type (class name) or a resolver function.
+     * @param string|callable($object, ContextInterface $context):string $resolver The target type (class name) or a resolver function.
      * 
      * @return $this
      */
@@ -35,7 +35,7 @@ class Engine implements EngineInterface
      * 
      * @throws InvalidArgumentException if no binding is found or cannot be resolved.
      */
-    public function resolve(mixed $object, Context $context): string
+    public function resolve(mixed $object, ContextInterface $context): string
     {
         $type = get_class($object) ?: 'type:' . gettype($object);
 
@@ -62,7 +62,7 @@ class Engine implements EngineInterface
      * 
      * @throws ReflectionException if the target type class does not exist
      */
-    public function execute(mixed $from, string $type, Context $context): mixed
+    public function execute(mixed $from, string $type, ContextInterface $context): mixed
     {
         $reflectionClass = new ReflectionClass($type);
         $attributes = $reflectionClass->getAttributes();
