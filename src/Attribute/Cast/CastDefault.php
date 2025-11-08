@@ -5,6 +5,7 @@ namespace Luimedi\Remap\Attribute\Cast;
 use Attribute;
 use DateTime;
 use DateTimeInterface;
+use Luimedi\Remap\ContextInterface;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
 class CastDefault implements CastInterface
@@ -17,8 +18,8 @@ class CastDefault implements CastInterface
     public function __construct(protected mixed $default = null, protected bool $strict = false)
     {
     }
-    
-    public function cast(mixed $value): mixed
+
+    public function cast(mixed $value, ContextInterface $context): mixed
     {
         if ($this->strict) {
             if (is_null($value) ) {

@@ -37,7 +37,7 @@ class Engine implements EngineInterface
      */
     public function resolve(mixed $object, ContextInterface $context): string
     {
-        $type = get_class($object) ?: 'type:' . gettype($object);
+        $type = is_object($object) ? get_class($object) : 'type:' . gettype($object);
 
         if (!isset($this->bindings[$type])) {
             throw new InvalidArgumentException("No binding found for {$type}");
