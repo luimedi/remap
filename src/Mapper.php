@@ -10,11 +10,6 @@ use Luimedi\Remap\Cast\CastDateTime;
 class Mapper 
 {
     /**
-     * @var array<string, string|callable>
-     */
-    protected array $bindings = [];
-
-    /**
      * This holds contextual information for the mapping process.
      * Is passed as argument to resolvers and mappers.
      */
@@ -31,8 +26,8 @@ class Mapper
      */
     public function __construct(?Context $context = null, ?Engine $engine = null)
     {
-        $this->context = $context ?? new Context();
         $this->engine = $engine ?? new Engine();
+        $this->setContext($context ?? new Context());
     }
 
     /**
@@ -45,7 +40,7 @@ class Mapper
      */
     public function bind(string $abstract, string|callable $resolver): static
     {
-        $this->bindings[$abstract] = $resolver;
+        $this->engine->bind($abstract, $resolver);
         return $this;
     }
 
@@ -64,6 +59,8 @@ class Mapper
     public function setContext(Context $context): static
     {
         $this->context = $context;
+        $this->withContext('__engine__', $this->engine);
+
         return $this;
     }
 
@@ -85,36 +82,9 @@ class Mapper
      */
     public function map(mixed $from, array $data = []): mixed
     {
-        $type = $this->resolve($from);
+        $type = $this->engine->resolve($from, $this->context);
         $context = new Context(array_merge($this->context->all(), $data));
 
         return $this->engine->execute($from, $type, $context);
-    }
-
-    /**
-     * Resolves the target type for the given object.
-     * 
-     * @throws InvalidArgumentException if no binding is found or cannot be resolved.
-     */
-    public function resolve(mixed $object): string
-    {
-        $type = get_class($object) ?: 'type:' . gettype($object);
-
-        if (!isset($this->bindings[$type])) {
-            throw new InvalidArgumentException("No binding found for {$type}");
-        }
-
-        $resolver = $this->bindings[$type];
-
-        if (is_callable($resolver)) {
-            return $resolver($object, $this->context);
-        }
-
-        if (class_exists($resolver)) {
-            return $resolver;
-        }
-
-        throw new InvalidArgumentException(
-            "Cannot resolve binding for {$type}");
     }
 }
