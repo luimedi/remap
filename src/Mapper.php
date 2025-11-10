@@ -100,9 +100,7 @@ class Mapper
         $context = new Context(array_merge($this->context->all(), $data));
         $output = [];
 
-        foreach ($from as $key => $value) {
-            $context->set('__key__', $key);
-
+        foreach ($from as $value) {
             $type = $this->engine->resolve($value, $context);
             $output[] = $this->engine->execute($value, $type, $context);
         }
