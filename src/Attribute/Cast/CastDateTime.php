@@ -7,7 +7,7 @@ use DateTime;
 use DateTimeInterface;
 use Luimedi\Remap\ContextInterface;
 
-#[Attribute(Attribute::TARGET_PARAMETER)]
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastDateTime implements CastInterface
 {
     public function __construct(protected ?string $format = DateTime::ATOM)

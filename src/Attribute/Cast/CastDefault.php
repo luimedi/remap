@@ -7,7 +7,7 @@ use DateTime;
 use DateTimeInterface;
 use Luimedi\Remap\ContextInterface;
 
-#[Attribute(Attribute::TARGET_PARAMETER)]
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastDefault implements CastInterface
 {
     /**

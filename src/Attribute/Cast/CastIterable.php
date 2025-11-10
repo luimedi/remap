@@ -6,7 +6,7 @@ use ArrayIterator;
 use Attribute;
 use Luimedi\Remap\ContextInterface;
 
-#[Attribute(Attribute::TARGET_PARAMETER)]
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastIterable implements CastInterface
 {
     public function __construct(private string $class, private array $args = [])

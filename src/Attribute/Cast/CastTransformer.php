@@ -6,7 +6,7 @@ use Attribute;
 use Luimedi\Remap\ContextInterface;
 use Luimedi\Remap\Attribute\Cast\CastInterface;
 
-#[Attribute(Attribute::TARGET_PARAMETER)]
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastTransformer implements CastInterface
 {
     public function cast(mixed $value, ContextInterface $context): mixed

@@ -72,7 +72,7 @@ class Engine implements EngineInterface
             $attributeInstance = $attribute->newInstance();
 
             if ($attributeInstance instanceof TransformerInterface) {
-                $instance = $attributeInstance->transform($from, $type, $context);
+                $instance = $attributeInstance->transform($from, $instance ?? $type, $context);
             }
         }
 
