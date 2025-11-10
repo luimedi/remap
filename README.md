@@ -26,7 +26,16 @@ A **Map** defines how the properties of an input object are mapped to an output 
 
 #### Basic Map usage example:
 
+
 ```php
+use Luimedi\Remap\Attribute\PropertyMapper;
+
+#[PropertyMapper]
+class Output {
+    #[MapProperty('name')]
+    public string $name;
+}
+
 $mapper = new Mapper();
 $mapper->bind(Input::class, Output::class);
 $result = $mapper->map(new Input(...));
@@ -53,7 +62,9 @@ The caster are called after map
 ```php
 use Luimedi\Remap\Attribute\MapProperty;
 use Luimedi\Remap\Attribute\CastDateTime;
+use Luimedi\Remap\Attribute\PropertyMapper;
 
+#[PropertyMapper]
 class Output {
     #[MapProperty('birthdate')]
     #[CastDateTime]
@@ -76,7 +87,9 @@ class Output {
 ```php
 use Luimedi\Remap\Attribute\MapProperty;
 use Luimedi\Remap\Attribute\CastTransformer;
+use Luimedi\Remap\Attribute\PropertyMapper;
 
+#[PropertyMapper]
 class NestedOutput {
     #[MapProperty('child')]
     #[CastTransformer]
@@ -99,7 +112,9 @@ class NestedOutput {
 use Luimedi\Remap\Attribute\MapProperty;
 use Luimedi\Remap\Attribute\CastIterable;
 use Luimedi\Remap\Attribute\CastDateTime;
+use Luimedi\Remap\Attribute\PropertyMapper;
 
+#[PropertyMapper]
 class Output {
     #[MapProperty('dates')]
     #[CastIterable(class: CastDateTime)]
