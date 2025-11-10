@@ -40,11 +40,8 @@ class ExampleTest extends TestCase
             new Input(name: 'Ana', birthdate: new DateTimeImmutable('1990-05-15')),
         ];
 
-        $iterator = $mapper->mapAsIterator($inputs);
-
-        $this->assertInstanceOf(\Iterator::class, $iterator);
-
-        $results = iterator_to_array($iterator);
+        $results = $mapper->mapAsIterable($inputs);
+        $this->assertIsArray($results);
 
         $this->assertCount(2, $results);
         $this->assertInstanceOf(Output::class, $results[0]);
@@ -55,5 +52,28 @@ class ExampleTest extends TestCase
 
         $this->assertSame('Ana', $results[1]->name);
         $this->assertSame('1990-05-15T00:00:00+00:00', $results[1]->birthdate);
+    }
+
+    public function testCastIterable()
+    {
+        $mapper = new Mapper();
+        
+        $mapper
+            ->bind(\Tests\Demo\SecondaryInput::class, \Tests\Demo\SecondaryOutput::class);
+
+        $input = new \Tests\Demo\SecondaryInput(dates: [
+            new DateTimeImmutable('2020-01-01'),
+            new DateTimeImmutable('2021-02-02'),
+            new DateTimeImmutable('2022-03-03'),
+        ]);
+
+        $result = $mapper->map($input);
+
+        $this->assertInstanceOf(\Tests\Demo\SecondaryOutput::class, $result);
+        $this->assertIsArray($result->dates);
+        $this->assertCount(3, $result->dates);
+        $this->assertSame('2020-01-01T00:00:00+00:00', $result->dates[0]);
+        $this->assertSame('2021-02-02T00:00:00+00:00', $result->dates[1]);
+        $this->assertSame('2022-03-03T00:00:00+00:00', $result->dates[2]);
     }
 }

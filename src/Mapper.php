@@ -95,7 +95,7 @@ class Mapper
      * 
      * @throws InvalidArgumentException if no binding is found or cannot be resolved.
      */
-    public function mapAsIterator(iterable $from, array $data = []): Iterator
+    public function mapAsIterable(iterable $from, array $data = []): array
     {
         $context = new Context(array_merge($this->context->all(), $data));
         $output = [];
@@ -107,6 +107,6 @@ class Mapper
             $output[] = $this->engine->execute($value, $type, $context);
         }
 
-        return new ArrayIterator($output);
+        return $output;
     }
 }
