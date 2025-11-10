@@ -1,5 +1,7 @@
 {
     "name": "luimedi/remap",
+    "description": "A PHP object mapping library using attributes.",
+    "keywords": ["mapping", "mapper", "attributes", "php"],
     "type": "library",
     "license": "MIT",
     "autoload": {
