@@ -130,7 +130,7 @@ use Luimedi\Remap\Attribute\PropertyMapper;
 #[PropertyMapper]
 class Output {
     #[MapProperty('dates')]
-    #[CastIterable(class: CastDateTime)]
+    #[CastIterable(class: CastDateTime::class)]
     public array $dates;
 }
 ```
