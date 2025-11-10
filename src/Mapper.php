@@ -2,7 +2,9 @@
 
 namespace Luimedi\Remap;
 
+use ArrayIterator;
 use InvalidArgumentException;
+use Iterator;
 
 class Mapper 
 {
@@ -83,5 +85,28 @@ class Mapper
         $context = new Context(array_merge($this->context->all(), $data));
 
         return $this->engine->execute($from, $type, $context);
+    }
+
+    /**
+     * Maps the given iterable to its target type, returning an iterator.
+     * 
+     * @param mixed $iterable The source iterable to be mapped.
+     * @param array $data Additional contextual data for this mapping operation.
+     * 
+     * @throws InvalidArgumentException if no binding is found or cannot be resolved.
+     */
+    public function mapAsIterator(iterable $from, array $data = []): Iterator
+    {
+        $context = new Context(array_merge($this->context->all(), $data));
+        $output = [];
+
+        foreach ($from as $key => $value) {
+            $context->set('__key__', $key);
+
+            $type = $this->engine->resolve($value, $context);
+            $output[] = $this->engine->execute($value, $type, $context);
+        }
+
+        return new ArrayIterator($output);
     }
 }
