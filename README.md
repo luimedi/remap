@@ -22,6 +22,7 @@ A **Map** defines how the properties of an input object are mapped to an output 
 - **MapProperty**: Maps a property from one object to another property, with the option to use a caster to transform the value.
 - **MapGetter**: Allows mapping using a getter method instead of a direct property.
 - **ConstructorMapper**: Allows mapping directly through the target object's constructor.
+- **PropertyMapper**: Same as `ConstructorMapper` but it uses properties.
 
 #### Basic Map usage example:
 
