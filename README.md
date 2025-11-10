@@ -1,7 +1,20 @@
 
+
 # Remap
 
 Remap is a PHP library for flexible mapping of objects and data structures, allowing you to transform and adapt data between different classes or formats. Its architecture is based on the use of **Map** and **Caster** to define how data conversion is performed.
+
+---
+
+## Installation
+
+You can install Remap via Composer:
+
+```bash
+composer require luimedi/remap
+```
+
+Make sure your project requires PHP 8.0 or higher.
 
 ## Main Features
 
