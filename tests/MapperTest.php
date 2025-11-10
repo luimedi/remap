@@ -9,7 +9,7 @@ use Tests\Demo\Input;
 use Tests\Demo\NestedOutput;
 use Tests\Demo\Output;
 
-class ExampleTest extends TestCase
+class MapperTest extends TestCase
 {
     public function testGeneralBinding()
     {
