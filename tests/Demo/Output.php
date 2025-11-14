@@ -7,16 +7,17 @@ use Luimedi\Remap\Attribute\Cast\CastTransformer;
 use Luimedi\Remap\Attribute\ConstructorMapper;
 use Luimedi\Remap\Attribute\MapGetter;
 use Luimedi\Remap\Attribute\MapProperty;
+use Luimedi\Remap\Attribute\PropertyMapper;
 
 #[ConstructorMapper]
+#[PropertyMapper]
 class Output
 {
+    use BirthdayTrait;
+
     public function __construct(
         #[MapProperty(source: 'name')]
         public string $name,
-        #[MapProperty(source: 'birthdate')]
-        #[CastDateTime]
-        public string $birthdate,
         #[MapGetter(source: 'getType')]
         public string $type,
         #[MapProperty(source: 'nested')]
