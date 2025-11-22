@@ -1,9 +1,9 @@
 <?php
 
+namespace Tests\RecursiveTest;
+
 use PHPUnit\Framework\TestCase;
 use Luimedi\Remap\Mapper;
-use Tests\Demo\RecursiveInput;
-use Tests\Demo\RecursiveOutput;
 
 class RecursiveTest extends TestCase
 {

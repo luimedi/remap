@@ -4,8 +4,6 @@ namespace Tests\ArrayRecursiveTest;
 
 use PHPUnit\Framework\TestCase;
 use Luimedi\Remap\Mapper;
-use Tests\Demo\ArrayInput;
-use Tests\Demo\ArrayOutput;
 
 class ArrayRecursiveTest extends TestCase
 {

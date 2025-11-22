@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\PropertyMapperTest;
 
 use DateTime;
 use Luimedi\Remap\Mapper;
@@ -8,19 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Luimedi\Remap\Attribute\MapProperty;
 use Luimedi\Remap\Attribute\PropertyMapper;
 use Luimedi\Remap\Attribute\Cast\CastDateTime;
-
-class Input
-{
-    public DateTime $birthdate;
-}
-
-#[PropertyMapper]
-class Output
-{
-    #[MapProperty(source: 'birthdate')]
-    #[CastDateTime]
-    public string $birthdate;
-}
 
 class PropertyMapperTest extends TestCase
 {

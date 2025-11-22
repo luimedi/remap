@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Demo;
+namespace Tests\ArrayRecursiveTest;
 
 use Luimedi\Remap\Attribute\PropertyMapper;
 use Luimedi\Remap\Attribute\MapProperty;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Demo;
+namespace Tests\MapperTest;
 
 use Luimedi\Remap\Attribute\Cast\CastDateTime;
 use Luimedi\Remap\Attribute\MapProperty;

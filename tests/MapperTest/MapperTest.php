@@ -1,13 +1,10 @@
 <?php
 
-namespace Tests;
+namespace Tests\MapperTest;
 
 use DateTimeImmutable;
 use Luimedi\Remap\Mapper;
 use PHPUnit\Framework\TestCase;
-use Tests\Demo\Input;
-use Tests\Demo\NestedOutput;
-use Tests\Demo\Output;
 
 class MapperTest extends TestCase
 {
@@ -59,9 +56,9 @@ class MapperTest extends TestCase
         $mapper = new Mapper();
         
         $mapper
-            ->bind(\Tests\Demo\SecondaryInput::class, \Tests\Demo\SecondaryOutput::class);
+            ->bind(SecondaryInput::class, SecondaryOutput::class);
 
-        $input = new \Tests\Demo\SecondaryInput(dates: [
+        $input = new SecondaryInput(dates: [
             new DateTimeImmutable('2020-01-01'),
             new DateTimeImmutable('2021-02-02'),
             new DateTimeImmutable('2022-03-03'),
@@ -69,9 +66,10 @@ class MapperTest extends TestCase
 
         $result = $mapper->map($input);
 
-        $this->assertInstanceOf(\Tests\Demo\SecondaryOutput::class, $result);
+        $this->assertInstanceOf(SecondaryOutput::class, $result);
         $this->assertIsArray($result->dates);
         $this->assertCount(3, $result->dates);
+        
         $this->assertSame('2020-01-01T00:00:00+00:00', $result->dates[0]);
         $this->assertSame('2021-02-02T00:00:00+00:00', $result->dates[1]);
         $this->assertSame('2022-03-03T00:00:00+00:00', $result->dates[2]);

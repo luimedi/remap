@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Demo;
+namespace Tests\RecursiveTest;
 
 class RecursiveInput
 {
