@@ -22,6 +22,66 @@ Install Remap via Composer. From your project root run:
 composer require luimedi/remap
 ```
 
+## Usage
+
+### Basic Usage
+
+Below is a minimal demonstration showing how a source class `BookEntity` can be mapped to a target `BookResource`. The example uses `CastDateTime` to convert a publication `DateTime` into an ISO-8601 string on the output.
+
+```php
+<?php
+use Luimedi\Remap\Mapper;
+use Luimedi\Remap\Attribute\ConstructorMapper;
+use Luimedi\Remap\Attribute\MapProperty;
+use Luimedi\Remap\Attribute\Cast\CastDateTime;
+
+// Source entity coming from anywhere (DB, API, etc.)
+class BookEntity
+{
+	public function __construct(
+		public string $title,
+		public string $author,
+		public DateTimeInterface $publishedAt
+	) {}
+}
+
+// Target resource declares how it wants its data. Mapping logic lives here.
+#[ConstructorMapper]
+class BookResource
+{
+	public function __construct(
+		#[MapProperty(source: 'title')]
+		public string $title,
+
+		#[MapProperty(source: 'author')]
+		public string $author,
+
+		// Cast the DateTime to an ISO-8601 string for transport
+		#[MapProperty(source: 'publishedAt')]
+		#[CastDateTime]
+		public string $publishedAt
+	) {}
+}
+
+// Usage: bind the source type to the target and map instances
+$mapper = new Mapper();
+$mapper->bind(BookEntity::class, BookResource::class);
+
+$entity = new BookEntity(
+	title: 'El Hobbit',
+	author: 'J.R.R. Tolkien',
+	publishedAt: new DateTimeImmutable('1937-09-21')
+);
+
+$resource = $mapper->map($entity);
+
+// $resource is an instance of BookResource with publishedAt as an ISO string
+echo $resource->title; // 'El Hobbit'
+echo $resource->publishedAt; // '1937-09-21T00:00:00+00:00'
+```
+
+This example shows the guiding principle of Remap: the target type defines how data should be extracted and transformed from arbitrary sources, keeping mapping responsibility on the receiver side.
+
 ## License and credits
 
 - **License:** This project is released under the MIT License. See the `LICENSE` file for full terms.
