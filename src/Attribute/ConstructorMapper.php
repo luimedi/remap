@@ -16,6 +16,7 @@ class ConstructorMapper implements TransformerInterface
     public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
     {
         $reflectionClass = new ReflectionClass($target);
+        
         // If transform is invoked with an existing target object, populate it
         // rather than creating a new instance. This allows Engine to pre-register
         // placeholder instances for recursive mappings.

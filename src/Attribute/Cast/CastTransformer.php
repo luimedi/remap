@@ -13,10 +13,12 @@ class CastTransformer implements CastInterface
     {
         /** @var \Luimedi\Remap\EngineInterface $engine */
         $engine = $context->get('__engine__');
+        
         // If the value is null, nothing to map.
         if ($value === null) {
             return null;
         }
+
         // Leave scalar (non-array, non-object) values untouched — CastTransformer
         // should transform arrays (they may resolve to a class via binding)
         // and objects, but simple scalars (string/int/float/bool) should be
