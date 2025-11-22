@@ -549,8 +549,8 @@ use Luimedi\Remap\Mapper;
 // Source type
 class UserInput
 {
-		public function __construct(public string $name, public string $role) {}
-		public function isAdmin(): bool { return $this->role === 'admin'; }
+    public function __construct(public string $name, public string $role) {}
+    public function isAdmin(): bool { return $this->role === 'admin'; }
 }
 
 // Target types
@@ -561,11 +561,11 @@ $mapper = new Mapper();
 
 // Bind the source class to a resolver callable that inspects context
 $mapper->bind(UserInput::class, function($from, $context) {
-		// resolver can consult the source object or the context values
-		if ($from->isAdmin() || $context->get('force_admin') === true) {
-				return AdminResource::class;
-		}
-		return UserResource::class;
+    // resolver can consult the source object or the context values
+    if ($from->isAdmin() || $context->get('force_admin') === true) {
+            return AdminResource::class;
+    }
+    return UserResource::class;
 });
 
 // Option A: use the source's own data
@@ -632,22 +632,22 @@ use Luimedi\Remap\ContextInterface;
 #[Attribute(Attribute::TARGET_CLASS)]
 class ExampleTransformer implements TransformerInterface
 {
-		public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
-		{
-				// $target may be a class name (string) or an existing instance.
-				$class = is_string($target) ? $target : get_class($target);
+    public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
+    {
+        // $target may be a class name (string) or an existing instance.
+        $class = is_string($target) ? $target : get_class($target);
 
-				// Create a new instance using a simple constructor or custom logic.
-				$instance = new $class();
+        // Create a new instance using a simple constructor or custom logic.
+        $instance = new $class();
 
-				// Populate instance from source using custom rules
-				if (is_object($source) && property_exists($source, 'meta')) {
-						$instance->meta = strtoupper((string)$source->meta);
-				}
+        // Populate instance from source using custom rules
+        if (is_object($source) && property_exists($source, 'meta')) {
+                $instance->meta = strtoupper((string)$source->meta);
+        }
 
-				// Return the final instance for the engine to continue with.
-				return $instance;
-		}
+        // Return the final instance for the engine to continue with.
+        return $instance;
+    }
 }
 ```
 
@@ -657,8 +657,8 @@ Usage on a target class:
 #[\App\Mapping\ExampleTransformer]
 class ProductResource
 {
-		public string $sku;
-		public string $meta;
+    public string $sku;
+    public string $meta;
 }
 
 $mapper = new \Luimedi\Remap\Mapper();
