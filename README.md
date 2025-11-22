@@ -30,6 +30,7 @@ Below is a minimal demonstration showing how a source class `BookEntity` can be 
 
 ```php
 <?php
+
 use Luimedi\Remap\Mapper;
 use Luimedi\Remap\Attribute\ConstructorMapper;
 use Luimedi\Remap\Attribute\MapProperty;
