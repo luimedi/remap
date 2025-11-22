@@ -33,6 +33,5 @@ class ArrayRecursiveTest extends TestCase
 
         // Child's parent must point to the mapped parent (cycle preserved)
         $this->assertSame($result, $childOut->parent);
-        var_dump($result);
     }
 }
