@@ -13,6 +13,17 @@ class CastTransformer implements CastInterface
     {
         /** @var \Luimedi\Remap\EngineInterface $engine */
         $engine = $context->get('__engine__');
+        // If the value is null, nothing to map.
+        if ($value === null) {
+            return null;
+        }
+        // Leave scalar (non-array, non-object) values untouched — CastTransformer
+        // should transform arrays (they may resolve to a class via binding)
+        // and objects, but simple scalars (string/int/float/bool) should be
+        // returned as-is so mixed arrays work.
+        if (!is_object($value) && !is_array($value)) {
+            return $value;
+        }
 
         // If we already mapped this source object, return the mapped instance.
         if (is_object($value)) {
