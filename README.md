@@ -167,6 +167,7 @@ Examples:
 
 ```php
 <?php
+
 use Luimedi\Remap\Mapper;
 use Luimedi\Remap\Attribute\PropertyMapper;
 use Luimedi\Remap\Attribute\MapProperty;
@@ -263,9 +264,81 @@ extracted (map -> cast). Two simple built-in casters are `CastDateTime` and
 	```
 
 Creating custom casters is straightforward — implement `CastInterface` and
-register your logic in `cast(mixed $value, ContextInterface $context): mixed`. As
-the library evolves more caster helpers will be added, but custom casters let you
-tailor mapping behavior to your application's needs.
+register your logic in `cast(mixed $value, ContextInterface $context): mixed`.
+As the library evolves more caster helpers will be added, but custom casters let
+you tailor mapping behavior to your application's needs.
+
+#### Creating custom casters
+
+Below is a complete example showing how to implement a tiny custom caster that
+appends " Aoy!" to a string, and how to use it in a constructor-mapped target.
+
+```php
+<?php
+
+namespace App\Cast;
+
+use Attribute;
+use Luimedi\Remap\Attribute\Cast\CastInterface;
+use Luimedi\Remap\ContextInterface;
+
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
+class AppendAoy implements CastInterface
+{
+	public function __construct()
+	{
+	}
+
+	public function cast(mixed $value, ContextInterface $context): mixed
+	{
+		if ($value === null) {
+			return null;
+		}
+
+		return (string)$value . ' Aoy!';
+	}
+}
+```
+
+Usage example (constructor-mapped target):
+
+```php
+<?php
+
+use Luimedi\Remap\Mapper;
+use Luimedi\Remap\Attribute\ConstructorMapper;
+use Luimedi\Remap\Attribute\MapProperty;
+
+class MessageInput
+{
+	public function __construct(public string $text) {}
+}
+
+#[ConstructorMapper]
+class MessageResource
+{
+	public function __construct(
+		#[MapProperty(source: 'text')]
+		#[\App\Cast\AppendAoy]
+		public string $text
+	) {}
+}
+
+$mapper = new Mapper();
+$mapper->bind(MessageInput::class, MessageResource::class);
+
+$out = $mapper->map(new MessageInput('Hello'));
+echo $out->text; // "Hello Aoy!"
+```
+
+Notes:
+
+- Keep casters small and deterministic — they should not perform side effects.
+- Caster attributes may accept constructor arguments if you need configurable
+  behavior (for example a suffix or formatting options).
+- Because casters run after mapping, they receive the extracted value (not the
+  source container), so they can assume they're operating on the relevant
+  primitive/object to transform.
 
 ### CastTransformer (object/array transformation)
 
@@ -441,6 +514,172 @@ echo $parentOut->children[0]->name; // 'a'
 
 This composition (`CastIterable` + `CastTransformer`) is a common pattern for
 mapping arrays of nested objects into arrays of mapped resources.
+
+## Advanced
+
+### Context and Dynamic Binding
+
+`Context` is a key/value bag used during mapping to carry auxiliary
+information that resolvers and casters can consult at runtime. It is useful to
+pass flags, configuration or external services into the mapping process without
+polluting source objects.
+
+How to set context:
+
+- When you create a `Mapper`, you can add global context entries using
+	`withContext($key, $value)` on the mapper instance. Those values are available
+	to all mappings performed by that mapper.
+- When you call `map($from, array $data = [])`, the mapper merges the mapper's
+	context with the provided `$data` to create a mapping-local `Context` instance.
+	This is handy to pass per-call options.
+
+Why use Context:
+
+- Allow dynamic binding decisions depending on runtime information (for
+	example user role, feature flags, or external configuration).
+- Provide services to casters or resolvers without coupling them to global
+	singletons — pass service references via context if needed.
+
+Dynamic binding example (resolver reads the context):
+
+```php
+<?php
+use Luimedi\Remap\Mapper;
+
+// Source type
+class UserInput
+{
+		public function __construct(public string $name, public string $role) {}
+		public function isAdmin(): bool { return $this->role === 'admin'; }
+}
+
+// Target types
+class AdminResource { public string $name; public string $level = 'admin'; }
+class UserResource  { public string $name; public string $level = 'user'; }
+
+$mapper = new Mapper();
+
+// Bind the source class to a resolver callable that inspects context
+$mapper->bind(UserInput::class, function($from, $context) {
+		// resolver can consult the source object or the context values
+		if ($from->isAdmin() || $context->get('force_admin') === true) {
+				return AdminResource::class;
+		}
+		return UserResource::class;
+});
+
+// Option A: use the source's own data
+$res1 = $mapper->map(new UserInput('Alice', 'admin'));
+
+// Option B: override decision via context
+$mapper->withContext('force_admin', true);
+$res2 = $mapper->map(new UserInput('Bob', 'user'));
+
+// res1 will be AdminResource (because isAdmin()), res2 will be AdminResource
+// because we set the 'force_admin' flag in the context.
+```
+
+Notes on safety and scope:
+
+- Context values are shallow-copied into a new `Context` per `map()` call so
+	per-call data does not leak across invocations.
+- Avoid storing large objects in context unless necessary; prefer service
+	factories or lightweight references.
+
+Combining dynamic binding with casters
+
+Resolvers often work hand-in-hand with casters like `CastTransformer`. A
+resolver can choose the appropriate target type based on the context, and the
+caster will then map nested structures into that chosen type. This enables
+flexible polymorphic mapping driven by runtime conditions.
+
+### Custom TransformerInterface implementations
+
+`TransformerInterface` allows you to write attribute-based transformers that take
+full control of how a target instance is produced from a source. Unlike simple
+mapping attributes that extract values for a single parameter or property, a
+transformer runs at the class level and can build, replace or mutate the
+entire target object.
+
+When to use a custom transformer:
+
+- Complex construction logic that can't be expressed with parameter/property
+	mappings alone.
+- Performing side-effect-free transformations (enriching, normalizing,
+	aggregating) before the usual property/constructor mapping runs.
+- Interoperating with legacy objects or 3rd-party APIs that require special
+	instantiation logic.
+
+Transformer lifecycle (high level):
+
+- The engine discovers class-level attributes and invokes any transformers
+	before completing the mapping process. A transformer receives the source and
+	either the current target instance (if a placeholder exists) or the target
+	type name. The transformer must return a concrete instance of the target.
+- Because transformers run early, they can create a fully-initialized instance
+	that subsequent mappers or property assignments will respect.
+
+Example: a custom transformer attribute that builds a target and sets extra data
+
+```php
+<?php
+namespace App\Mapping;
+
+use Attribute;
+use Luimedi\Remap\Attribute\TransformerInterface;
+use Luimedi\Remap\ContextInterface;
+
+#[Attribute(Attribute::TARGET_CLASS)]
+class ExampleTransformer implements TransformerInterface
+{
+		public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
+		{
+				// $target may be a class name (string) or an existing instance.
+				$class = is_string($target) ? $target : get_class($target);
+
+				// Create a new instance using a simple constructor or custom logic.
+				$instance = new $class();
+
+				// Populate instance from source using custom rules
+				if (is_object($source) && property_exists($source, 'meta')) {
+						$instance->meta = strtoupper((string)$source->meta);
+				}
+
+				// Return the final instance for the engine to continue with.
+				return $instance;
+		}
+}
+```
+
+Usage on a target class:
+
+```php
+#[\App\Mapping\ExampleTransformer]
+class ProductResource
+{
+		public string $sku;
+		public string $meta;
+}
+
+$mapper = new \Luimedi\Remap\Mapper();
+$mapper->bind(ProductInput::class, ProductResource::class);
+
+$out = $mapper->map(new ProductInput(...));
+```
+
+Notes and best practices:
+
+- Always return a concrete instance of the expected target type.
+- Keep transformers deterministic and side-effect free — they should not rely on
+	global mutable state.
+- Transformers can cooperate with `ConstructorMapper` and `PropertyMapper`:
+	because transformers run early you can create a base instance and let the
+	other mappers fill remaining fields, or you may return a complete instance
+	and skip further mapping if desired.
+
+With `TransformerInterface` you gain full control over the instantiation phase
+and can implement advanced mapping rules while still leveraging the rest of the
+attribute-driven system.
 
 ## License and credits
 
