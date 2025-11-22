@@ -66,7 +66,26 @@ class Engine implements EngineInterface
     {
         $reflectionClass = new ReflectionClass($type);
         $attributes = $reflectionClass->getAttributes();
+
         $instance = null;
+
+        // If the source is an object, prepare a registry mapping so recursive
+        // references can return the already-created target instance.
+        if (is_object($from)) {
+            $id = spl_object_hash($from);
+            $registry = $context->get('__mapping_registry__', []);
+
+            if (isset($registry[$id])) {
+                // There is already a mapped instance for this source.
+                $instance = $registry[$id];
+            } else {
+                // Create a placeholder instance without invoking constructor so
+                // it can be returned for recursive references during mapping.
+                $instance = $reflectionClass->newInstanceWithoutConstructor();
+                $registry[$id] = $instance;
+                $context->set('__mapping_registry__', $registry);
+            }
+        }
 
         foreach ($attributes as $attribute) {
             $attributeInstance = $attribute->newInstance();
@@ -74,6 +93,14 @@ class Engine implements EngineInterface
             if ($attributeInstance instanceof TransformerInterface) {
                 $instance = $attributeInstance->transform($from, $instance ?? $type, $context);
             }
+        }
+
+        // Ensure registry points to the final instance if source was object.
+        if (is_object($from)) {
+            $id = spl_object_hash($from);
+            $registry = $context->get('__mapping_registry__', []);
+            $registry[$id] = $instance;
+            $context->set('__mapping_registry__', $registry);
         }
 
         return $instance;

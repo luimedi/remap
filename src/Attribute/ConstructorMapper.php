@@ -16,6 +16,13 @@ class ConstructorMapper implements TransformerInterface
     public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
     {
         $reflectionClass = new ReflectionClass($target);
+        // If transform is invoked with an existing target object, populate it
+        // rather than creating a new instance. This allows Engine to pre-register
+        // placeholder instances for recursive mappings.
+        if (is_object($target)) {
+            return $this->populateInstance($source, $reflectionClass, $target, $context);
+        }
+
         return $this->newInstance($source, $reflectionClass, $context);
     }
 
@@ -52,6 +59,57 @@ class ConstructorMapper implements TransformerInterface
 
         return $reflectionClass->newInstanceArgs(
             $this->applyCasters($parameterValues, $parameters, $context));
+    }
+
+    /**
+     * Populate an existing instance (created without constructor) with mapped values.
+     */
+    private function populateInstance(mixed $from, ReflectionClass $reflectionClass, object $instance, ContextInterface $context): mixed
+    {
+        $constructor = $reflectionClass->getConstructor();
+        $parameters = $constructor->getParameters();
+
+        $parameterValues = [];
+
+        foreach ($parameters as $parameter) {
+            $name = $parameter->getName();
+            $attributes = $parameter->getAttributes();
+
+            foreach ($attributes as $attribute) {
+                $attrInstance = $attribute->newInstance();
+
+                if ($attrInstance instanceof MapInterface) {
+                    $parameterValues[$name] = $attrInstance->map($from, $context);
+                }
+            }
+        }
+
+        $parameterValues = $this->applyCasters($parameterValues, $parameters, $context);
+
+        // Set each parameter value on the instance. For non-public properties
+        // use a bound closure instead of ReflectionProperty::setAccessible
+        // (deprecated).
+        foreach ($parameterValues as $name => $value) {
+            if ($reflectionClass->hasProperty($name)) {
+                $prop = $reflectionClass->getProperty($name);
+
+                if ($prop->isPublic()) {
+                    $prop->setValue($instance, $value);
+                } else {
+                    // Use a closure bound to the target class to set non-public props.
+                    $setter = function ($val) use ($name) {
+                        $this->{$name} = $val;
+                    };
+
+                    $bound = $setter->bindTo($instance, $reflectionClass->getName());
+                    $bound($value);
+                }
+            } else {
+                $instance->$name = $value;
+            }
+        }
+
+        return $instance;
     }
 
     /**
