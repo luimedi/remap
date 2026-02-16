@@ -5,6 +5,7 @@ namespace Luimedi\Remap\Attribute;
 use InvalidArgumentException;
 use Luimedi\Remap\Attribute\Cast\CastInterface;
 use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\MappingTarget;
 use ReflectionClass;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
@@ -53,7 +54,13 @@ class ConstructorMapper implements TransformerInterface
                 $instance = $attribute->newInstance();
                 
                 if ($instance instanceof MapInterface) {
-                    $parameterValues[$name] = $instance->map($from, $context);
+                    $type = null;
+                    $paramType = $parameter->getType();
+                    if ($paramType && method_exists($paramType, 'getName')) {
+                        $type = $paramType->getName();
+                    }
+                    $target = new MappingTarget($name, $type);
+                    $parameterValues[$name] = $instance->map($from, $context, $target);
                 }
             }
         };
@@ -80,7 +87,13 @@ class ConstructorMapper implements TransformerInterface
                 $attrInstance = $attribute->newInstance();
 
                 if ($attrInstance instanceof MapInterface) {
-                    $parameterValues[$name] = $attrInstance->map($from, $context);
+                    $paramType = $parameter->getType();
+                    $type = null;
+                    if ($paramType && method_exists($paramType, 'getName')) {
+                        $type = $paramType->getName();
+                    }
+                    $target = new \Luimedi\Remap\MappingTarget($name, $type);
+                    $parameterValues[$name] = $attrInstance->map($from, $context, $target);
                 }
             }
         }
