@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Luimedi\Remap\Attribute\MapInterface;
 use Luimedi\Remap\Attribute\TransformerInterface;
 use Luimedi\Remap\Cast\CastInterface;
+use Luimedi\Remap\MappingTarget;
 use ReflectionClass;
 use ReflectionException;
 
@@ -91,7 +92,8 @@ class Engine implements EngineInterface
             $attributeInstance = $attribute->newInstance();
 
             if ($attributeInstance instanceof TransformerInterface) {
-                $instance = $attributeInstance->transform($from, $instance ?? $type, $context);
+                $mappingTarget = new MappingTarget($reflectionClass->getName(), $type);
+                $instance = $attributeInstance->transform($from, $instance ?? $type, $context, $mappingTarget);
             }
         }
 

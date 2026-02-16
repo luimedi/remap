@@ -6,6 +6,7 @@ use Attribute;
 use DateTime;
 use DateTimeInterface;
 use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\MappingTarget;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastDefault implements CastInterface
@@ -19,7 +20,7 @@ class CastDefault implements CastInterface
     {
     }
 
-    public function cast(mixed $value, ContextInterface $context): mixed
+    public function cast(mixed $value, ContextInterface $context, MappingTarget $mappingTarget): mixed
     {
         if ($this->strict) {
             if (is_null($value) ) {

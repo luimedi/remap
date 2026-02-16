@@ -14,7 +14,7 @@ class ConstructorMapper implements TransformerInterface
     /**
      * Transforms the given source object into an instance of the target class.
      */
-    public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
+    public function transform(mixed $source, mixed $target, ContextInterface $context, MappingTarget $mappingTarget): mixed
     {
         $reflectionClass = new ReflectionClass($target);
         
@@ -150,7 +150,16 @@ class ConstructorMapper implements TransformerInterface
                     if (!array_key_exists($name, $values)) {
                         throw new InvalidArgumentException("Cannot cast parameter '$name' because it has no value.");
                     }
-                    $values[$name] = $instance->cast($values[$name], $context);
+
+                    $paramType = $parameter->getType();
+                    $type = null;
+
+                    if ($paramType && method_exists($paramType, 'getName')) {
+                        $type = $paramType->getName();
+                    }
+
+                    $target = new MappingTarget($name, $type);
+                    $values[$name] = $instance->cast($values[$name], $context, $target);
                 }
             }
         }
