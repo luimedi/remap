@@ -15,7 +15,7 @@ class Input
         public DateTimeInterface $birthdate,
     ) {}
 
-    public function getType(): string
+    public function type(): string
     {
         return 'demo';
     }

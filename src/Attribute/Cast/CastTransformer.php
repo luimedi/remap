@@ -14,6 +14,9 @@ class CastTransformer implements CastInterface
     {
         /** @var \Luimedi\Remap\EngineInterface $engine */
         $engine = $context->get('__engine__');
+        $targetType = is_string($mappingTarget->type) && class_exists($mappingTarget->type)
+            ? $mappingTarget->type
+            : null;
         
         // If the value is null, nothing to map.
         if ($value === null) {
@@ -51,7 +54,7 @@ class CastTransformer implements CastInterface
             $context->set('__casting_stack__', $stack);
 
             try {
-                $type = $engine->resolve($value, $context);
+                $type = $targetType ?? $engine->resolve($value, $context);
                 $result = $engine->execute($value, $type, $context);
             } finally {
                 array_pop($stack);
@@ -61,7 +64,7 @@ class CastTransformer implements CastInterface
             return $result;
         }
 
-        $type = $engine->resolve($value, $context);
+        $type = $targetType ?? $engine->resolve($value, $context);
 
         return $engine->execute($value, $type, $context);
     }

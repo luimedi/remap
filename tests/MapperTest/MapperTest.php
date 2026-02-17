@@ -12,9 +12,7 @@ class MapperTest extends TestCase
     {
         $mapper = new Mapper();
         
-        $mapper
-            ->bind(Input::class, Output::class)
-            ->bind('type:array', NestedOutput::class);
+        $mapper->bind(Input::class, Output::class);
 
         $result = $mapper->map(new Input(name: 'Luis', birthdate: new DateTimeImmutable('1988-01-01')));
         $this->assertInstanceOf(Output::class, $result);
@@ -28,9 +26,7 @@ class MapperTest extends TestCase
     {
         $mapper = new Mapper();
         
-        $mapper
-            ->bind(Input::class, Output::class)
-            ->bind('type:array', NestedOutput::class);
+        $mapper->bind(Input::class, Output::class);
 
         $inputs = [
             new Input(name: 'Luis', birthdate: new DateTimeImmutable('1988-01-01')),

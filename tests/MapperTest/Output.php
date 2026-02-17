@@ -16,11 +16,11 @@ class Output
     use BirthdayTrait;
 
     public function __construct(
-        #[MapProperty(source: 'name')]
+        #[MapProperty]
         public string $name,
-        #[MapGetter(source: 'getType')]
+        #[MapGetter]
         public string $type,
-        #[MapProperty(source: 'nested')]
+        #[MapProperty]
         #[CastTransformer]
         public NestedOutput $nested
     ) {}

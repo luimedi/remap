@@ -157,10 +157,12 @@ parameters or public properties.
 
 - `MapProperty`: reads a value from the source using dot-notation (e.g. `user.name`).
 	It works with arrays and objects — internally it uses the `Data::get()` helper
-	to traverse nested structures and access properties or array keys.
+	to traverse nested structures and access properties or array keys. If `source`
+	is omitted, it defaults to the target parameter/property name.
 
 - `MapGetter`: calls a method on the source object. Provide the method name and
-	the attribute will call that getter on the source (e.g. `getType`). This is useful
+	the attribute will call that getter on the source (e.g. `getType`). If `source`
+	is omitted, it defaults to the target parameter/property name. This is useful
 	when the source exposes computed values or an explicit API for retrieving a value.
 
 Examples:
@@ -262,6 +264,13 @@ extracted (map -> cast). Two simple built-in casters are `CastDateTime` and
 	#[CastDefault(default: 'anonymous')]
 	public string $nickname;
 	```
+
+- `CastTransformer`
+
+	- Maps nested arrays/objects to another target object. When the mapped target
+		parameter/property has a declared class type, `CastTransformer` uses that
+		type directly, so child mappings can work without adding extra `bind()`
+		definitions for intermediate array/object values.
 
 Creating custom casters is straightforward — implement `CastInterface` and
 register your logic in `cast(mixed $value, ContextInterface $context): mixed`.
