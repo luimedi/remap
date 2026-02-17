@@ -9,7 +9,7 @@ use Luimedi\Remap\Attribute\PropertyMapper;
 #[PropertyMapper]
 class Output
 {
-    #[MapProperty(source: 'birthdate')]
+    #[MapProperty]
     #[CastDateTime()]
     public string $birthdate;
 }

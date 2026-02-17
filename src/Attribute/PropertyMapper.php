@@ -5,6 +5,7 @@ namespace Luimedi\Remap\Attribute;
 use InvalidArgumentException;
 use Luimedi\Remap\Attribute\Cast\CastInterface;
 use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\MappingTarget;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -14,7 +15,7 @@ class PropertyMapper implements TransformerInterface
     /**
      * Transforms the given source object into an instance of the target class.
      */
-    public function transform(mixed $source, mixed $target, ContextInterface $context): mixed
+    public function transform(mixed $source, mixed $target, ContextInterface $context, MappingTarget $mappingTarget): mixed
     {
         $reflectionClass = new ReflectionClass($target);
         $properties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
@@ -23,11 +24,20 @@ class PropertyMapper implements TransformerInterface
         foreach ($properties as $property) {
             $value = null;
 
+            $type = null;
+            $propType = $property->getType();
+
+            if ($propType && method_exists($propType, 'getName')) {
+                $type = $propType->getName();
+            }
+
+            $propTarget = new MappingTarget($property->getName(), $type);
+
             foreach ($this->getValidAttributes($property) as $attribute) {
                 if ($attribute instanceof CastInterface) {
-                    $value = $attribute->cast($value, $context);
+                    $value = $attribute->cast($value, $context, $propTarget);
                 } elseif ($attribute instanceof MapInterface) {
-                    $value = $attribute->map($source, $context);
+                    $value = $attribute->map($source, $context, $propTarget);
                 }
             }
 

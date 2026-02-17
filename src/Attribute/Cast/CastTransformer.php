@@ -4,15 +4,19 @@ namespace Luimedi\Remap\Attribute\Cast;
 
 use Attribute;
 use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\MappingTarget;
 use Luimedi\Remap\Attribute\Cast\CastInterface;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastTransformer implements CastInterface
 {
-    public function cast(mixed $value, ContextInterface $context): mixed
+    public function cast(mixed $value, ContextInterface $context, MappingTarget $mappingTarget): mixed
     {
         /** @var \Luimedi\Remap\EngineInterface $engine */
         $engine = $context->get('__engine__');
+        $targetType = is_string($mappingTarget->type) && class_exists($mappingTarget->type)
+            ? $mappingTarget->type
+            : null;
         
         // If the value is null, nothing to map.
         if ($value === null) {
@@ -50,7 +54,7 @@ class CastTransformer implements CastInterface
             $context->set('__casting_stack__', $stack);
 
             try {
-                $type = $engine->resolve($value, $context);
+                $type = $targetType ?? $engine->resolve($value, $context);
                 $result = $engine->execute($value, $type, $context);
             } finally {
                 array_pop($stack);
@@ -60,7 +64,7 @@ class CastTransformer implements CastInterface
             return $result;
         }
 
-        $type = $engine->resolve($value, $context);
+        $type = $targetType ?? $engine->resolve($value, $context);
 
         return $engine->execute($value, $type, $context);
     }
