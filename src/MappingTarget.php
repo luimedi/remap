@@ -2,10 +2,22 @@
 
 namespace Luimedi\Remap;
 
-class MappingTarget
+use Luimedi\Remap\Contracts\MappingTargetInterface;
+
+class MappingTarget implements MappingTargetInterface
 {
     public function __construct(
-        public string $name,
-        public ?string $type = null
+        private string $name,
+        private ?string $type = null
     ) {}
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
 }

@@ -7,7 +7,7 @@ use DateTime;
 use DateTimeInterface;
 use Luimedi\Remap\Contracts\CastInterface;
 use Luimedi\Remap\Contracts\ContextInterface;
-use Luimedi\Remap\MappingTarget;
+use Luimedi\Remap\Contracts\MappingTargetInterface;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastDateTime implements CastInterface
@@ -16,7 +16,7 @@ class CastDateTime implements CastInterface
     {
     }
 
-    public function cast(mixed $value, ContextInterface $context, MappingTarget $mappingTarget): mixed
+    public function cast(mixed $value, ContextInterface $context, MappingTargetInterface $mappingTarget): mixed
     {
         if ($value instanceof DateTimeInterface) {
             return $value->format(DateTime::ATOM);
