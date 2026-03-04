@@ -3,8 +3,10 @@
 namespace Luimedi\Remap\Attribute;
 
 use InvalidArgumentException;
-use Luimedi\Remap\Attribute\Cast\CastInterface;
-use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\Contracts\CastInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\MapInterface;
+use Luimedi\Remap\Contracts\TransformerInterface;
 use Luimedi\Remap\MappingTarget;
 use ReflectionClass;
 

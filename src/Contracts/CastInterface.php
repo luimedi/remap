@@ -1,8 +1,8 @@
 <?php
 
-namespace Luimedi\Remap\Attribute\Cast;
+namespace Luimedi\Remap\Contracts;
 
-use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\MappingTarget;
 
 interface CastInterface

@@ -4,7 +4,8 @@ namespace Luimedi\Remap\Attribute\Cast;
 
 use ArrayIterator;
 use Attribute;
-use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\Contracts\CastInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\MappingTarget;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]

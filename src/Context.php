@@ -2,8 +2,8 @@
 
 namespace Luimedi\Remap;
 
-
 use ArrayIterator;
+use Luimedi\Remap\Contracts\ContextInterface;
 
 use Traversable;
 

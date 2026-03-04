@@ -3,9 +3,11 @@
 namespace Luimedi\Remap;
 
 use InvalidArgumentException;
-use Luimedi\Remap\Attribute\MapInterface;
-use Luimedi\Remap\Attribute\TransformerInterface;
-use Luimedi\Remap\Cast\CastInterface;
+use Luimedi\Remap\Contracts\EngineInterface;
+use Luimedi\Remap\Contracts\MapInterface;
+use Luimedi\Remap\Contracts\TransformerInterface;
+use Luimedi\Remap\Contracts\CastInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\MappingTarget;
 use ReflectionClass;
 use ReflectionException;

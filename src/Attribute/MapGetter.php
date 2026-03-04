@@ -4,7 +4,8 @@ namespace Luimedi\Remap\Attribute;
 
 use Attribute;
 use InvalidArgumentException;
-use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\MapInterface;
 use Luimedi\Remap\MappingTarget;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]

@@ -5,6 +5,8 @@ namespace Luimedi\Remap;
 use ArrayIterator;
 use InvalidArgumentException;
 use Iterator;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\EngineInterface;
 
 class Mapper 
 {

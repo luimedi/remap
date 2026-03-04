@@ -3,7 +3,8 @@
 namespace Luimedi\Remap\Attribute;
 
 use Attribute;
-use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\MapInterface;
 use Luimedi\Remap\Data;
 use Luimedi\Remap\MappingTarget;
 

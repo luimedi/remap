@@ -5,7 +5,8 @@ namespace Luimedi\Remap\Attribute\Cast;
 use Attribute;
 use DateTime;
 use DateTimeInterface;
-use Luimedi\Remap\ContextInterface;
+use Luimedi\Remap\Contracts\CastInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\MappingTarget;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]

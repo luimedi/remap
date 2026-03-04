@@ -1,6 +1,6 @@
 <?php
 
-namespace Luimedi\Remap;
+namespace Luimedi\Remap\Contracts;
 
 use Countable;
 use IteratorAggregate;
