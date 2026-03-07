@@ -4,6 +4,7 @@ namespace Tests\CastDefaultTest;
 
 use Luimedi\Remap\Exception\MissingMappedValueException;
 use Luimedi\Remap\Mapper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use Tests\CastDefaultTest\Input;
@@ -13,38 +14,50 @@ use Tests\CastDefaultTest\OutputCasterMissing;
 
 class CastDefaultTest extends TestCase
 {
-    public function testCastDefaultNonStrictReplacesEmpty()
+    #[DataProvider('nonStrictEmptyValuesProvider')]
+    public function testCastDefaultNonStrictReplacesEmpty(mixed $emptyValue, string $expectedReplacement)
     {
         $mapper = new Mapper();
-
         $mapper->bind(Input::class, OutputNonStrict::class);
 
-        $input = new Input(maybe: '');
-
+        $input = new Input(maybe: $emptyValue);
         $result = $mapper->map($input);
 
         $this->assertInstanceOf(OutputNonStrict::class, $result);
-        $this->assertSame('fallback', $result->maybe);
+        $this->assertSame($expectedReplacement, $result->maybe);
     }
 
-    public function testCastDefaultStrictOnlyNull()
+    public static function nonStrictEmptyValuesProvider(): array
+    {
+        return [
+            'empty string' => ['', 'fallback'],
+            'null value' => [null, 'fallback'],
+            'zero integer' => [0, 'fallback'],
+            'false boolean' => [false, 'fallback'],
+        ];
+    }
+
+    #[DataProvider('strictModeValuesProvider')]
+    public function testCastDefaultStrictOnlyNull(mixed $inputValue, mixed $expectedOutput)
     {
         $mapper = new Mapper();
-
         $mapper->bind(Input::class, OutputStrict::class);
 
-        // Empty string should not be replaced when strict=true
-        $input = new Input(maybe: '');
-
+        $input = new Input(maybe: $inputValue);
         $result = $mapper->map($input);
 
         $this->assertInstanceOf(OutputStrict::class, $result);
-        $this->assertSame('', $result->maybe);
+        $this->assertSame($expectedOutput, $result->maybe);
+    }
 
-        // Null should be replaced
-        $input2 = new Input(maybe: null);
-        $result2 = $mapper->map($input2);
-        $this->assertSame('fallback', $result2->maybe);
+    public static function strictModeValuesProvider(): array
+    {
+        return [
+            'empty string not replaced' => ['', ''],
+            'zero not replaced' => [0, 0],
+            'false not replaced' => [false, false],
+            'null is replaced' => [null, 'fallback'],
+        ];
     }
 
     public function testConstructorCasterThrowsWhenNoValue()
