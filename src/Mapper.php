@@ -3,10 +3,10 @@
 namespace Luimedi\Remap;
 
 use ArrayIterator;
-use InvalidArgumentException;
 use Iterator;
 use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\Contracts\EngineInterface;
+use Luimedi\Remap\Exception\RemapException;
 
 class Mapper 
 {
@@ -79,7 +79,7 @@ class Mapper
      * @param mixed $from The source object to be mapped.
      * @param array $data Additional contextual data for this mapping operation.
      * 
-     * @throws InvalidArgumentException if no binding is found or cannot be resolved.
+        * @throws RemapException if mapping cannot be resolved or executed.
      */
     public function map(mixed $from, array $data = []): mixed
     {
@@ -95,7 +95,7 @@ class Mapper
      * @param mixed $iterable The source iterable to be mapped.
      * @param array $data Additional contextual data for this mapping operation.
      * 
-     * @throws InvalidArgumentException if no binding is found or cannot be resolved.
+        * @throws RemapException if mapping cannot be resolved or executed.
      */
     public function mapAsIterable(iterable $from, array $data = []): array
     {

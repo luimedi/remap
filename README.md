@@ -222,9 +222,46 @@ Notes and tips:
 - `MapProperty` supports nested keys via dot-notation and works with arrays and
 	objects; if a segment is missing the default `null` (or provided default) will be returned.
 - `MapGetter` requires a callable method on the source — if the method does not
-	exist a PHP exception will occur, so prefer checks or defensive code on the source
-	or use a resolver to choose a safer mapping strategy.
+	exist a `MapGetterResolutionException` will be thrown.
 - Use `MapGetter` for computed values and `MapProperty` for direct data lookups.
+
+### Error Handling
+
+Remap exposes a dedicated exception hierarchy under `Luimedi\Remap\Exception`.
+All library-specific failures extend `RemapException`, making it simple to catch
+all Remap errors in one place.
+
+Main exceptions include:
+
+- `BindingNotFoundException`: no mapping binding exists for the source type.
+- `BindingResolutionException`: a binding resolver returned an invalid target type.
+- `InvalidTargetTypeException`: the resolved target type could not be instantiated.
+- `MapGetterResolutionException`: `MapGetter` could not resolve a source method.
+- `MissingMappedValueException`: a caster was applied to a parameter with no mapped value.
+
+Example:
+
+```php
+use Luimedi\Remap\Exception\RemapException;
+
+try {
+	$result = $mapper->map($source);
+} catch (RemapException $exception) {
+	// Centralized handling for all Remap-specific failures.
+	$mappingTrace = $exception->getMappingTrace();
+	$previous = $exception->getPrevious(); // Original low-level error, if any.
+}
+```
+
+`getMappingTrace()` returns an ordered list of mapping steps, for example:
+
+```php
+[
+	['phase' => 'execute', 'targetType' => 'App\\Output', 'sourceType' => 'App\\Input'],
+	['phase' => 'attribute.transform', 'targetType' => 'App\\Output', 'attribute' => 'Luimedi\\Remap\\Attribute\\ConstructorMapper'],
+	['phase' => 'constructor.parameter.cast', 'parameter' => 'status', 'caster' => 'Luimedi\\Remap\\Attribute\\Cast\\CastDefault'],
+]
+```
 
 ### Casters
 

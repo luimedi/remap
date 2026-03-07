@@ -2,6 +2,10 @@
 
 namespace Luimedi\Remap\Contracts;
 
+use Luimedi\Remap\Exception\BindingNotFoundException;
+use Luimedi\Remap\Exception\BindingResolutionException;
+use Luimedi\Remap\Exception\InvalidTargetTypeException;
+
 interface EngineInterface
 {
     /**
@@ -17,12 +21,15 @@ interface EngineInterface
     /**
      * Resolves the target type for the given object.
      * 
-     * @throws InvalidArgumentException if no binding is found or cannot be resolved.
+     * @throws BindingNotFoundException if no binding is found.
+     * @throws BindingResolutionException if a binding cannot be resolved.
      */
     public function resolve(mixed $object, ContextInterface $context): string;
 
     /**
      * Executes the mapping from the source object to an instance of the target type.
+     * 
+     * @throws InvalidTargetTypeException if the target type cannot be instantiated.
      */
     public function execute(mixed $from, string $type, ContextInterface $context): mixed;
 }

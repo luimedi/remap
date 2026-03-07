@@ -2,15 +2,17 @@
 
 namespace Luimedi\Remap\Attribute;
 
-use InvalidArgumentException;
 use Luimedi\Remap\Contracts\CastInterface;
 use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\Contracts\MapInterface;
 use Luimedi\Remap\Contracts\TransformerInterface;
+use Luimedi\Remap\Exception\MappingExecutionException;
+use Luimedi\Remap\Exception\RemapException;
 use Luimedi\Remap\MappingTarget;
 use Luimedi\Remap\Contracts\MappingTargetInterface;
 use ReflectionClass;
 use ReflectionProperty;
+use Throwable;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class PropertyMapper implements TransformerInterface
@@ -38,13 +40,36 @@ class PropertyMapper implements TransformerInterface
 
             foreach ($this->getValidAttributes($property) as $attribute) {
                 if ($attribute instanceof CastInterface) {
-                    $value = $attribute->cast($value, $context, $propTarget);
+                    try {
+                        $value = $attribute->cast($value, $context, $propTarget);
+                    } catch (Throwable $exception) {
+                        $this->throwWithTrace($exception, $context, [
+                            'phase' => 'property.cast',
+                            'property' => $property->getName(),
+                            'caster' => $attribute::class,
+                        ]);
+                    }
                 } elseif ($attribute instanceof MapInterface) {
-                    $value = $attribute->map($source, $context, $propTarget);
+                    try {
+                        $value = $attribute->map($source, $context, $propTarget);
+                    } catch (Throwable $exception) {
+                        $this->throwWithTrace($exception, $context, [
+                            'phase' => 'property.map',
+                            'property' => $property->getName(),
+                            'mapper' => $attribute::class,
+                        ]);
+                    }
                 }
             }
 
-            $property->setValue($instance, $value);
+            try {
+                $property->setValue($instance, $value);
+            } catch (Throwable $exception) {
+                $this->throwWithTrace($exception, $context, [
+                    'phase' => 'property.set',
+                    'property' => $property->getName(),
+                ]);
+            }
         }
 
         return $instance;
@@ -82,5 +107,20 @@ class PropertyMapper implements TransformerInterface
         });
 
         return $validAttributes;
+    }
+
+    /**
+     * @param array<string, mixed> $step
+     */
+    private function throwWithTrace(Throwable $exception, ContextInterface $context, array $step): never
+    {
+        $trace = $context->get('__mapping_trace__', []);
+        $trace[] = $step;
+
+        if ($exception instanceof RemapException) {
+            throw $exception->appendMappingTrace($trace);
+        }
+
+        throw MappingExecutionException::fromThrowable($exception, $trace);
     }
 }

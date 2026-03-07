@@ -2,7 +2,7 @@
 
 namespace Tests\CastDefaultTest;
 
-use InvalidArgumentException;
+use Luimedi\Remap\Exception\MissingMappedValueException;
 use Luimedi\Remap\Mapper;
 use PHPUnit\Framework\TestCase;
 
@@ -49,11 +49,24 @@ class CastDefaultTest extends TestCase
 
     public function testConstructorCasterThrowsWhenNoValue()
     {
-        $this->expectException(InvalidArgumentException::class);
-
         $mapper = new Mapper();
         $mapper->bind(Input::class, OutputCasterMissing::class);
 
-        $mapper->map(new Input(maybe: null));
+        try {
+            $mapper->map(new Input(maybe: null));
+            $this->fail('Expected MissingMappedValueException to be thrown');
+        } catch (MissingMappedValueException $exception) {
+            $trace = $exception->getMappingTrace();
+
+            $this->assertNotEmpty($trace);
+            $this->assertSame('execute', $trace[0]['phase'] ?? null);
+
+            $castStep = array_values(array_filter($trace, static function (array $step): bool {
+                return ($step['phase'] ?? null) === 'constructor.parameter.cast';
+            }));
+
+            $this->assertNotEmpty($castStep);
+            $this->assertSame('maybe', $castStep[0]['parameter'] ?? null);
+        }
     }
 }

@@ -2,7 +2,8 @@
 
 namespace Tests\EngineTest;
 
-use InvalidArgumentException;
+use Luimedi\Remap\Exception\BindingNotFoundException;
+use Luimedi\Remap\Exception\RemapException;
 use Luimedi\Remap\Mapper;
 use PHPUnit\Framework\TestCase;
 
@@ -23,10 +24,22 @@ class EngineTest extends TestCase
 
     public function testResolveThrowsWhenNoBinding()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(BindingNotFoundException::class);
 
         $mapper = new Mapper();
 
         $mapper->map(new class {});
+    }
+
+    public function testLibraryExceptionsCanBeCaughtByBaseRemapException()
+    {
+        $mapper = new Mapper();
+
+        try {
+            $mapper->map(new class {});
+            $this->fail('Expected an exception to be thrown');
+        } catch (\Throwable $exception) {
+            $this->assertInstanceOf(RemapException::class, $exception);
+        }
     }
 }

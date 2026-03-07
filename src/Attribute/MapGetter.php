@@ -3,10 +3,10 @@
 namespace Luimedi\Remap\Attribute;
 
 use Attribute;
-use InvalidArgumentException;
 use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\Contracts\MapInterface;
 use Luimedi\Remap\Contracts\MappingTargetInterface;
+use Luimedi\Remap\Exception\MapGetterResolutionException;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class MapGetter implements MapInterface
@@ -31,9 +31,7 @@ class MapGetter implements MapInterface
         }
 
         if (!is_object($from) || !is_string($method) || !method_exists($from, $method)) {
-            throw new InvalidArgumentException(
-                "MapGetter could not resolve a method for target '" . $target->getName() . "'"
-            );
+            throw MapGetterResolutionException::forTarget($target->getName());
         }
 
         return $from->{$method}();
