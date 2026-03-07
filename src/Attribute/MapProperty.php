@@ -3,9 +3,10 @@
 namespace Luimedi\Remap\Attribute;
 
 use Attribute;
-use Luimedi\Remap\ContextInterface;
-use Luimedi\Remap\Data;
-use Luimedi\Remap\MappingTarget;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\MapInterface;
+use Luimedi\Remap\Contracts\MappingTargetInterface;
+use Luimedi\Remap\Helpers\Data;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class MapProperty implements MapInterface
@@ -15,8 +16,8 @@ class MapProperty implements MapInterface
         //
     }
 
-    public function map(mixed $from, ContextInterface $context, MappingTarget $target): mixed
+    public function map(mixed $from, ContextInterface $context, MappingTargetInterface $target): mixed
     {
-        return Data::get($from, $this->source ?? $target->name);
+        return Data::get($from, $this->source ?? $target->getName());
     }
 }

@@ -4,8 +4,9 @@ namespace Luimedi\Remap\Attribute\Cast;
 
 use ArrayIterator;
 use Attribute;
-use Luimedi\Remap\ContextInterface;
-use Luimedi\Remap\MappingTarget;
+use Luimedi\Remap\Contracts\CastInterface;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\MappingTargetInterface;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class CastIterable implements CastInterface
@@ -14,7 +15,7 @@ class CastIterable implements CastInterface
     {
     }
 
-    public function cast(mixed $value, ContextInterface $context, MappingTarget $mappingTarget): mixed
+    public function cast(mixed $value, ContextInterface $context, MappingTargetInterface $mappingTarget): mixed
     {
         $caster = new $this->class(...$this->args);
         $output = [];

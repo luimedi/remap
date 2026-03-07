@@ -2,7 +2,7 @@
 
 namespace Tests\DataObjectTest;
 
-use Luimedi\Remap\Data;
+use Luimedi\Remap\Helpers\Data;
 use PHPUnit\Framework\TestCase;
 
 use Tests\DataObjectTest\Inner;

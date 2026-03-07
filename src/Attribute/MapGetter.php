@@ -3,9 +3,10 @@
 namespace Luimedi\Remap\Attribute;
 
 use Attribute;
-use InvalidArgumentException;
-use Luimedi\Remap\ContextInterface;
-use Luimedi\Remap\MappingTarget;
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\MapInterface;
+use Luimedi\Remap\Contracts\MappingTargetInterface;
+use Luimedi\Remap\Exception\MapGetterResolutionException;
 
 #[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
 class MapGetter implements MapInterface
@@ -15,24 +16,22 @@ class MapGetter implements MapInterface
         //
     }
 
-    public function map(mixed $from, ContextInterface $context, MappingTarget $target): mixed
+    public function map(mixed $from, ContextInterface $context, MappingTargetInterface $target): mixed
     {
         $method = $this->source;
 
         if ($method === null) {
-            $getterMethod = 'get' . ucfirst($target->name);
+            $getterMethod = 'get' . ucfirst($target->getName());
 
             if (is_object($from) && method_exists($from, $getterMethod)) {
                 $method = $getterMethod;
-            } elseif (is_object($from) && method_exists($from, $target->name)) {
-                $method = $target->name;
+            } elseif (is_object($from) && method_exists($from, $target->getName())) {
+                $method = $target->getName();
             }
         }
 
         if (!is_object($from) || !is_string($method) || !method_exists($from, $method)) {
-            throw new InvalidArgumentException(
-                "MapGetter could not resolve a method for target '{$target->name}'"
-            );
+            throw MapGetterResolutionException::forTarget($target->getName());
         }
 
         return $from->{$method}();

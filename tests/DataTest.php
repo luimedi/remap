@@ -1,6 +1,8 @@
 <?php
 
-namespace Luimedi\Remap;
+namespace Tests;
+
+use Luimedi\Remap\Helpers\Data;
 
 class DataTest extends \PHPUnit\Framework\TestCase
 {
