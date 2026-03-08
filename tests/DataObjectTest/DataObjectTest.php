@@ -5,10 +5,6 @@ namespace Tests\DataObjectTest;
 use Luimedi\Remap\Helpers\Data;
 use PHPUnit\Framework\TestCase;
 
-use Tests\DataObjectTest\Inner;
-use Tests\DataObjectTest\User;
-use Tests\DataObjectTest\Root;
-
 class DataObjectTest extends TestCase
 {
     public function testGetObjectNestedProperty()

@@ -77,7 +77,7 @@ class ExceptionTest extends TestCase
             $this->fail('Expected BindingResolutionException');
         } catch (BindingResolutionException $exception) {
             $this->assertStringContainsString('Cannot resolve binding', $exception->getMessage());
-            
+
             $trace = $exception->getMappingTrace();
             $this->assertNotEmpty($trace);
         }
@@ -86,7 +86,7 @@ class ExceptionTest extends TestCase
     public function testInvalidTargetTypeException()
     {
         $mapper = new Mapper();
-        
+
         // Bind to an abstract class that cannot be instantiated
         // This will throw MappingExecutionException wrapping the Error from newInstanceWithoutConstructor
         $mapper->bind(ValidSource::class, AbstractTarget::class);
@@ -105,7 +105,7 @@ class ExceptionTest extends TestCase
             $trace = $exception->getMappingTrace();
             $this->assertNotEmpty($trace);
 
-            $executeStep = array_values(array_filter($trace, fn($s) => ($s['phase'] ?? null) === 'execute'));
+            $executeStep = array_values(array_filter($trace, fn ($s) => ($s['phase'] ?? null) === 'execute'));
             $this->assertNotEmpty($executeStep);
             $this->assertArrayHasKey('targetType', $executeStep[0]);
         }
@@ -114,16 +114,16 @@ class ExceptionTest extends TestCase
     public function testInvalidTargetTypeExceptionForInternalClass()
     {
         $mapper = new Mapper();
-        
+
         // Try to map to an internal class that may cause reflection issues
         // Using a callable to bypass initial class_exists check
-        $mapper->bind(ValidSource::class, fn() => \PDO::class);
+        $mapper->bind(ValidSource::class, fn () => \PDO::class);
 
         try {
             $result = $mapper->map(new ValidSource());
             // PDO might actually work, so we just verify it doesn't throw our custom exception
             $this->assertInstanceOf(\PDO::class, $result);
-        } catch (InvalidTargetTypeException | MappingExecutionException $exception) {
+        } catch (InvalidTargetTypeException|MappingExecutionException $exception) {
             // Either exception is acceptable for this edge case
             $this->assertNotEmpty($exception->getMappingTrace());
         }
@@ -145,8 +145,7 @@ class ExceptionTest extends TestCase
             $trace = $exception->getMappingTrace();
             $this->assertNotEmpty($trace);
 
-            $propertyMapStep = array_values(array_filter($trace, fn($s) => 
-                ($s['phase'] ?? null) === 'property.map'
+            $propertyMapStep = array_values(array_filter($trace, fn ($s) => ($s['phase'] ?? null) === 'property.map'
             ));
             $this->assertNotEmpty($propertyMapStep);
             $this->assertSame('missingMethod', $propertyMapStep[0]['property'] ?? null);
@@ -167,8 +166,7 @@ class ExceptionTest extends TestCase
             $trace = $exception->getMappingTrace();
             $this->assertNotEmpty($trace);
 
-            $castStep = array_values(array_filter($trace, fn($s) => 
-                ($s['phase'] ?? null) === 'constructor.parameter.cast'
+            $castStep = array_values(array_filter($trace, fn ($s) => ($s['phase'] ?? null) === 'constructor.parameter.cast'
             ));
             $this->assertNotEmpty($castStep);
             $this->assertArrayHasKey('parameter', $castStep[0]);
@@ -195,10 +193,9 @@ class ExceptionTest extends TestCase
             // Verify trace
             $trace = $exception->getMappingTrace();
             $this->assertNotEmpty($trace);
-            
+
             // Should have the cast phase where it failed
-            $castStep = array_values(array_filter($trace, fn($s) => 
-                str_contains($s['phase'] ?? '', 'cast')
+            $castStep = array_values(array_filter($trace, fn ($s) => str_contains($s['phase'] ?? '', 'cast')
             ));
             $this->assertNotEmpty($castStep, 'Should have a cast step in trace');
         }
@@ -229,7 +226,7 @@ class ExceptionTest extends TestCase
     public function testMappingTraceCanBeAppended()
     {
         $exception = BindingNotFoundException::forType('SomeType');
-        
+
         $this->assertEmpty($exception->getMappingTrace());
 
         $exception->appendMappingTrace([
@@ -255,7 +252,7 @@ class ExceptionTest extends TestCase
     public function testMappingTraceDeduplicatesSteps()
     {
         $exception = BindingNotFoundException::forType('SomeType');
-        
+
         $step = ['phase' => 'duplicate', 'data' => 'same'];
 
         $exception->appendMappingTrace([$step]);

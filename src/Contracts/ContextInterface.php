@@ -4,9 +4,8 @@ namespace Luimedi\Remap\Contracts;
 
 use Countable;
 use IteratorAggregate;
-use ArrayAccess;
 
-interface ContextInterface extends ArrayAccess, IteratorAggregate, Countable
+interface ContextInterface extends \ArrayAccess, IteratorAggregate, Countable
 {
     public function set(string $key, mixed $value): void;
 

@@ -25,7 +25,7 @@ class EngineTest extends TestCase
     {
         return [
             'simple resolver' => [
-                fn($obj, $ctx) => Output::class,
+                fn ($obj, $ctx) => Output::class,
                 Output::class,
             ],
             'context-aware resolver' => [
@@ -48,7 +48,7 @@ class EngineTest extends TestCase
         } catch (BindingNotFoundException $exception) {
             // Verify exception details
             $this->assertStringContainsString('No binding found', $exception->getMessage());
-            
+
             // Verify mapping trace
             $trace = $exception->getMappingTrace();
             $this->assertNotEmpty($trace);
@@ -67,7 +67,7 @@ class EngineTest extends TestCase
         } catch (RemapException $exception) {
             $this->assertInstanceOf(RemapException::class, $exception);
             $this->assertInstanceOf(BindingNotFoundException::class, $exception);
-            
+
             // Verify we can get trace and previous exception info
             $this->assertIsArray($exception->getMappingTrace());
         }
@@ -82,7 +82,7 @@ class EngineTest extends TestCase
         $result = $mapper->map(new Input());
 
         $this->assertInstanceOf(Output::class, $result);
-        
+
         // Context should be preserved in the mapper
         $context = $mapper->getContext();
         $this->assertSame('test_value', $context->get('test_key'));

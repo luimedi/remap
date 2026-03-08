@@ -5,14 +5,12 @@ namespace Luimedi\Remap\Attribute;
 use Luimedi\Remap\Contracts\CastInterface;
 use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\Contracts\MapInterface;
+use Luimedi\Remap\Contracts\MappingTargetInterface;
 use Luimedi\Remap\Contracts\TransformerInterface;
 use Luimedi\Remap\Exception\MappingExecutionException;
 use Luimedi\Remap\Exception\MissingMappedValueException;
 use Luimedi\Remap\Exception\RemapException;
 use Luimedi\Remap\MappingTarget;
-use Luimedi\Remap\Contracts\MappingTargetInterface;
-use ReflectionClass;
-use Throwable;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class ConstructorMapper implements TransformerInterface
@@ -22,8 +20,8 @@ class ConstructorMapper implements TransformerInterface
      */
     public function transform(mixed $source, mixed $target, ContextInterface $context, MappingTargetInterface $mappingTarget): mixed
     {
-        $reflectionClass = new ReflectionClass($target);
-        
+        $reflectionClass = new \ReflectionClass($target);
+
         // If transform is invoked with an existing target object, populate it
         // rather than creating a new instance. This allows Engine to pre-register
         // placeholder instances for recursive mappings.
@@ -37,12 +35,13 @@ class ConstructorMapper implements TransformerInterface
     /**
      * Creates a new instance of the target class by mapping its constructor parameters.
      *
-     * @param mixed $from The source object to map from.
-     * @param ReflectionClass $reflectionClass The reflection of the target class.
-     * @param ContextInterface $context The contextual information for the mapping process.
-     * @return mixed A new instance of the target class with mapped parameters.
+     * @param mixed            $from            the source object to map from
+     * @param \ReflectionClass $reflectionClass the reflection of the target class
+     * @param ContextInterface $context         the contextual information for the mapping process
+     *
+     * @return mixed a new instance of the target class with mapped parameters
      */
-    private function newInstance(mixed $from, ReflectionClass $reflectionClass, ContextInterface $context): mixed
+    private function newInstance(mixed $from, \ReflectionClass $reflectionClass, ContextInterface $context): mixed
     {
         $constructor = $reflectionClass->getConstructor();
         $parameters = $constructor->getParameters();
@@ -56,7 +55,7 @@ class ConstructorMapper implements TransformerInterface
 
             foreach ($attributes as $attribute) {
                 $instance = $attribute->newInstance();
-                
+
                 if ($instance instanceof MapInterface) {
                     $type = null;
                     $paramType = $parameter->getType();
@@ -67,7 +66,7 @@ class ConstructorMapper implements TransformerInterface
 
                     try {
                         $parameterValues[$name] = $instance->map($from, $context, $target);
-                    } catch (Throwable $exception) {
+                    } catch (\Throwable $exception) {
                         $this->throwWithTrace($exception, $context, [
                             'phase' => 'constructor.parameter.map',
                             'parameter' => $name,
@@ -76,7 +75,7 @@ class ConstructorMapper implements TransformerInterface
                     }
                 }
             }
-        };
+        }
 
         return $reflectionClass->newInstanceArgs(
             $this->applyCasters($parameterValues, $parameters, $context));
@@ -85,7 +84,7 @@ class ConstructorMapper implements TransformerInterface
     /**
      * Populate an existing instance (created without constructor) with mapped values.
      */
-    private function populateInstance(mixed $from, ReflectionClass $reflectionClass, object $instance, ContextInterface $context): mixed
+    private function populateInstance(mixed $from, \ReflectionClass $reflectionClass, object $instance, ContextInterface $context): mixed
     {
         $constructor = $reflectionClass->getConstructor();
         $parameters = $constructor->getParameters();
@@ -105,11 +104,11 @@ class ConstructorMapper implements TransformerInterface
                     if ($paramType && method_exists($paramType, 'getName')) {
                         $type = $paramType->getName();
                     }
-                    $target = new \Luimedi\Remap\MappingTarget($name, $type);
+                    $target = new MappingTarget($name, $type);
 
                     try {
                         $parameterValues[$name] = $attrInstance->map($from, $context, $target);
-                    } catch (Throwable $exception) {
+                    } catch (\Throwable $exception) {
                         $this->throwWithTrace($exception, $context, [
                             'phase' => 'constructor.parameter.map',
                             'parameter' => $name,
@@ -151,11 +150,11 @@ class ConstructorMapper implements TransformerInterface
     /**
      * Applies casters to the parameter values based on their attributes.
      *
-     * @param array<string, mixed> $values The current parameter values.
-     * @param array<\ReflectionParameter> $parameters The constructor parameters.
-     * @param ContextInterface $context The context for the mapping process.
-     * 
-     * @return array<string, mixed> The parameter values after applying casters.
+     * @param array<string, mixed>        $values     the current parameter values
+     * @param array<\ReflectionParameter> $parameters the constructor parameters
+     * @param ContextInterface            $context    the context for the mapping process
+     *
+     * @return array<string, mixed> the parameter values after applying casters
      */
     protected function applyCasters(array $values, array $parameters, ContextInterface $context): array
     {
@@ -165,7 +164,7 @@ class ConstructorMapper implements TransformerInterface
 
             foreach ($attributes as $attribute) {
                 $instance = $attribute->newInstance();
-                
+
                 if ($instance instanceof CastInterface) {
                     if (!array_key_exists($name, $values)) {
                         $this->throwWithTrace(
@@ -190,7 +189,7 @@ class ConstructorMapper implements TransformerInterface
 
                     try {
                         $values[$name] = $instance->cast($values[$name], $context, $target);
-                    } catch (Throwable $exception) {
+                    } catch (\Throwable $exception) {
                         $this->throwWithTrace($exception, $context, [
                             'phase' => 'constructor.parameter.cast',
                             'parameter' => $name,
@@ -207,7 +206,7 @@ class ConstructorMapper implements TransformerInterface
     /**
      * @param array<string, mixed> $step
      */
-    private function throwWithTrace(Throwable $exception, ContextInterface $context, array $step): never
+    private function throwWithTrace(\Throwable $exception, ContextInterface $context, array $step): never
     {
         $trace = $context->get('__mapping_trace__', []);
         $trace[] = $step;

@@ -2,13 +2,11 @@
 
 namespace Luimedi\Remap\Attribute\Cast;
 
-use Attribute;
 use Luimedi\Remap\Contracts\CastInterface;
 use Luimedi\Remap\Contracts\ContextInterface;
-use Luimedi\Remap\Contracts\TransformerInterface;
 use Luimedi\Remap\Contracts\MappingTargetInterface;
 
-#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PARAMETER | \Attribute::TARGET_PROPERTY)]
 class CastTransformer implements CastInterface
 {
     public function cast(mixed $value, ContextInterface $context, MappingTargetInterface $mappingTarget): mixed
@@ -18,9 +16,9 @@ class CastTransformer implements CastInterface
         $targetType = is_string($mappingTarget->getType()) && class_exists($mappingTarget->getType())
             ? $mappingTarget->getType()
             : null;
-        
+
         // If the value is null, nothing to map.
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 

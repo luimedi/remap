@@ -12,9 +12,9 @@ class DataTest extends \PHPUnit\Framework\TestCase
             'user' => [
                 'name' => 'Alice',
                 'address' => [
-                    'city' => 'Wonderland'
-                ]
-            ]
+                    'city' => 'Wonderland',
+                ],
+            ],
         ];
 
         $city = Data::get($data, 'user.address.city');

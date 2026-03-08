@@ -2,13 +2,12 @@
 
 namespace Luimedi\Remap;
 
-use ArrayIterator;
 use Iterator;
 use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\Contracts\EngineInterface;
 use Luimedi\Remap\Exception\RemapException;
 
-class Mapper 
+class Mapper
 {
     /**
      * This holds contextual information for the mapping process.
@@ -17,7 +16,7 @@ class Mapper
     protected ContextInterface $context;
 
     /**
-     * The engine responsible for executing the mapping reading 
+     * The engine responsible for executing the mapping reading
      * the attributes from the target class.
      */
     protected EngineInterface $engine;
@@ -33,15 +32,16 @@ class Mapper
 
     /**
      * Binds a source type to a target type or a resolver function.
-     * 
-     * @param string $abstract The source type (class name or 'type:<type>').
-     * @param string|callable($object, Context $context):string $resolver The target type (class name) or a resolver function.
-     * 
+     *
+     * @param string $abstract the source type (class name or 'type:<type>')
+     * @param string|callable($object, Context $context):string $resolver The target type (class name) or a resolver function
+     *
      * @return $this
      */
     public function bind(string $abstract, string|callable $resolver): static
     {
         $this->engine->bind($abstract, $resolver);
+
         return $this;
     }
 
@@ -51,6 +51,7 @@ class Mapper
     public function withContext(string $key, mixed $value): static
     {
         $this->context->set($key, $value);
+
         return $this;
     }
 
@@ -75,11 +76,11 @@ class Mapper
 
     /**
      * Maps the given object to its target type.
-     * 
-     * @param mixed $from The source object to be mapped.
-     * @param array $data Additional contextual data for this mapping operation.
-     * 
-        * @throws RemapException if mapping cannot be resolved or executed.
+     *
+     * @param mixed $from the source object to be mapped
+     * @param array $data additional contextual data for this mapping operation
+     *
+     * @throws RemapException if mapping cannot be resolved or executed
      */
     public function map(mixed $from, array $data = []): mixed
     {
@@ -91,11 +92,10 @@ class Mapper
 
     /**
      * Maps the given iterable to its target type, returning an iterator.
-     * 
-     * @param mixed $iterable The source iterable to be mapped.
-     * @param array $data Additional contextual data for this mapping operation.
-     * 
-        * @throws RemapException if mapping cannot be resolved or executed.
+     *
+     * @param array $data additional contextual data for this mapping operation
+     *
+     * @throws RemapException if mapping cannot be resolved or executed
      */
     public function mapAsIterable(iterable $from, array $data = []): array
     {

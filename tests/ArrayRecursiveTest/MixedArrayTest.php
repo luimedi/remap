@@ -2,8 +2,8 @@
 
 namespace Tests\ArrayRecursiveTest;
 
-use PHPUnit\Framework\TestCase;
 use Luimedi\Remap\Mapper;
+use PHPUnit\Framework\TestCase;
 
 class MixedArrayTest extends TestCase
 {

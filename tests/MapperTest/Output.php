@@ -2,7 +2,6 @@
 
 namespace Tests\MapperTest;
 
-use Luimedi\Remap\Attribute\Cast\CastDateTime;
 use Luimedi\Remap\Attribute\Cast\CastTransformer;
 use Luimedi\Remap\Attribute\ConstructorMapper;
 use Luimedi\Remap\Attribute\MapGetter;
@@ -22,6 +21,7 @@ class Output
         public string $type,
         #[MapProperty]
         #[CastTransformer]
-        public NestedOutput $nested
-    ) {}
+        public NestedOutput $nested,
+    ) {
+    }
 }

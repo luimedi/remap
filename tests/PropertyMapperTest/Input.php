@@ -2,9 +2,7 @@
 
 namespace Tests\PropertyMapperTest;
 
-use DateTime;
-
 class Input
 {
-    public DateTime $birthdate;
+    public \DateTime $birthdate;
 }

@@ -2,13 +2,11 @@
 
 namespace Luimedi\Remap\Attribute\Cast;
 
-use ArrayIterator;
-use Attribute;
 use Luimedi\Remap\Contracts\CastInterface;
 use Luimedi\Remap\Contracts\ContextInterface;
 use Luimedi\Remap\Contracts\MappingTargetInterface;
 
-#[Attribute(Attribute::TARGET_PARAMETER | Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PARAMETER | \Attribute::TARGET_PROPERTY)]
 class CastIterable implements CastInterface
 {
     public function __construct(private string $class, private array $args = [])

@@ -2,18 +2,14 @@
 
 namespace Luimedi\Remap;
 
+use Luimedi\Remap\Contracts\ContextInterface;
+use Luimedi\Remap\Contracts\EngineInterface;
+use Luimedi\Remap\Contracts\TransformerInterface;
 use Luimedi\Remap\Exception\BindingNotFoundException;
 use Luimedi\Remap\Exception\BindingResolutionException;
 use Luimedi\Remap\Exception\InvalidTargetTypeException;
 use Luimedi\Remap\Exception\MappingExecutionException;
 use Luimedi\Remap\Exception\RemapException;
-use Luimedi\Remap\Contracts\EngineInterface;
-use Luimedi\Remap\Contracts\TransformerInterface;
-use Luimedi\Remap\Contracts\ContextInterface;
-use Luimedi\Remap\MappingTarget;
-use ReflectionClass;
-use ReflectionException;
-use Throwable;
 
 class Engine implements EngineInterface
 {
@@ -24,27 +20,28 @@ class Engine implements EngineInterface
 
     /**
      * Binds a source type to a target type or a resolver function.
-     * 
-     * @param string $abstract The source type (class name or 'type:<type>').
-     * @param string|callable($object, ContextInterface $context):string $resolver The target type (class name) or a resolver function.
-     * 
+     *
+     * @param string $abstract the source type (class name or 'type:<type>')
+     * @param string|callable($object, ContextInterface $context):string $resolver The target type (class name) or a resolver function
+     *
      * @return $this
      */
     public function bind(string $abstract, string|callable $resolver): static
     {
         $this->bindings[$abstract] = $resolver;
+
         return $this;
     }
 
     /**
      * Resolves the target type for the given object.
-     * 
-     * @throws BindingNotFoundException if no binding is found.
-     * @throws BindingResolutionException if a binding cannot be resolved to a valid class name.
+     *
+     * @throws BindingNotFoundException   if no binding is found
+     * @throws BindingResolutionException if a binding cannot be resolved to a valid class name
      */
     public function resolve(mixed $object, ContextInterface $context): string
     {
-        $type = is_object($object) ? get_class($object) : 'type:' . gettype($object);
+        $type = is_object($object) ? get_class($object) : 'type:'.gettype($object);
         $trace = [[
             'phase' => 'resolve',
             'sourceType' => $type,
@@ -63,8 +60,7 @@ class Engine implements EngineInterface
                 return $resolvedType;
             }
 
-            throw BindingResolutionException::forType($type, $resolvedType)
-                ->appendMappingTrace($trace);
+            throw BindingResolutionException::forType($type, $resolvedType)->appendMappingTrace($trace);
         }
 
         if (is_string($resolver) && class_exists($resolver)) {
@@ -76,8 +72,8 @@ class Engine implements EngineInterface
 
     /**
      * Executes the mapping process from the source object to an instance of the target type.
-     * 
-     * @throws InvalidTargetTypeException if the target type cannot be instantiated.
+     *
+     * @throws InvalidTargetTypeException if the target type cannot be instantiated
      */
     public function execute(mixed $from, string $type, ContextInterface $context): mixed
     {
@@ -87,8 +83,8 @@ class Engine implements EngineInterface
             'sourceType' => is_object($from) ? get_class($from) : gettype($from),
         ], function () use ($from, $type, $context) {
             try {
-                $reflectionClass = new ReflectionClass($type);
-            } catch (ReflectionException $exception) {
+                $reflectionClass = new \ReflectionClass($type);
+            } catch (\ReflectionException $exception) {
                 throw InvalidTargetTypeException::forType($type, $exception);
             }
 
@@ -96,8 +92,8 @@ class Engine implements EngineInterface
 
             $instance = null;
 
-        // If the source is an object, prepare a registry mapping so recursive
-        // references can return the already-created target instance.
+            // If the source is an object, prepare a registry mapping so recursive
+            // references can return the already-created target instance.
             if (is_object($from)) {
                 $id = spl_object_hash($from);
                 $registry = $context->get('__mapping_registry__', []);
@@ -110,7 +106,7 @@ class Engine implements EngineInterface
                     // it can be returned for recursive references during mapping.
                     try {
                         $instance = $reflectionClass->newInstanceWithoutConstructor();
-                    } catch (ReflectionException $exception) {
+                    } catch (\ReflectionException $exception) {
                         throw InvalidTargetTypeException::forType($type, $exception);
                     }
 
@@ -166,7 +162,7 @@ class Engine implements EngineInterface
 
         try {
             return $callback();
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             throw $this->enrichException($exception, $trace);
         } finally {
             $finalTrace = $context->get('__mapping_trace__', []);
@@ -178,7 +174,7 @@ class Engine implements EngineInterface
     /**
      * @param array<int, array<string, mixed>> $trace
      */
-    private function enrichException(Throwable $exception, array $trace): RemapException
+    private function enrichException(\Throwable $exception, array $trace): RemapException
     {
         if ($exception instanceof RemapException) {
             return $exception->appendMappingTrace($trace);

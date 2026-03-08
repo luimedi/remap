@@ -8,9 +8,9 @@ class ArrayInput
     public array $children = [];
 
     public function __construct(
-        public string $name, 
-        ?ArrayInput $parent = null, 
-        array $children = []
+        public string $name,
+        ?ArrayInput $parent = null,
+        array $children = [],
     ) {
         $this->parent = $parent;
         $this->children = $children;

@@ -2,9 +2,9 @@
 
 namespace Tests\RecursiveTest;
 
+use Luimedi\Remap\Attribute\Cast\CastTransformer;
 use Luimedi\Remap\Attribute\ConstructorMapper;
 use Luimedi\Remap\Attribute\MapProperty;
-use Luimedi\Remap\Attribute\Cast\CastTransformer;
 
 #[ConstructorMapper]
 class RecursiveOutput
@@ -15,6 +15,7 @@ class RecursiveOutput
 
         #[MapProperty(source: 'parent')]
         #[CastTransformer]
-        public ?RecursiveOutput $parent = null
-    ) {}
+        public ?RecursiveOutput $parent = null,
+    ) {
+    }
 }

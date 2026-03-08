@@ -2,10 +2,7 @@
 
 namespace Luimedi\Remap\Exception;
 
-use RuntimeException;
-use Throwable;
-
-abstract class RemapException extends RuntimeException
+abstract class RemapException extends \RuntimeException
 {
     /**
      * @var array<int, array<string, mixed>>
@@ -15,7 +12,7 @@ abstract class RemapException extends RuntimeException
     /**
      * @param array<int, array<string, mixed>> $mappingTrace
      */
-    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null, array $mappingTrace = [])
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null, array $mappingTrace = [])
     {
         parent::__construct($message, $code, $previous);
         $this->mappingTrace = $mappingTrace;
@@ -26,7 +23,7 @@ abstract class RemapException extends RuntimeException
      */
     public function appendMappingTrace(array $trace): static
     {
-        if ($trace === []) {
+        if ([] === $trace) {
             return $this;
         }
 

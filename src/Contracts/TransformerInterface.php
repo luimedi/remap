@@ -2,9 +2,6 @@
 
 namespace Luimedi\Remap\Contracts;
 
-use Luimedi\Remap\Contracts\ContextInterface;
-use Luimedi\Remap\Contracts\MappingTargetInterface;
-
 interface TransformerInterface
 {
     /**

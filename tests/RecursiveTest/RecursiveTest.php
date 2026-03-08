@@ -2,8 +2,8 @@
 
 namespace Tests\RecursiveTest;
 
-use PHPUnit\Framework\TestCase;
 use Luimedi\Remap\Mapper;
+use PHPUnit\Framework\TestCase;
 
 class RecursiveTest extends TestCase
 {
@@ -31,7 +31,7 @@ class RecursiveTest extends TestCase
         // Because of the guard, the grand-parent (which would point back to child) should be left as the original source object
         // or remain unmapped (in our current implementation the guard returns the original value), so ensure we don't get infinite loop
         $this->assertTrue(
-            $result->parent->parent === $child || $result->parent->parent === null || $result->parent->parent instanceof RecursiveOutput
+            $result->parent->parent === $child || null === $result->parent->parent || $result->parent->parent instanceof RecursiveOutput
         );
     }
 }

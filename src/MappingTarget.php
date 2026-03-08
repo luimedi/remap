@@ -8,8 +8,9 @@ class MappingTarget implements MappingTargetInterface
 {
     public function __construct(
         private string $name,
-        private ?string $type = null
-    ) {}
+        private ?string $type = null,
+    ) {
+    }
 
     public function getName(): string
     {
