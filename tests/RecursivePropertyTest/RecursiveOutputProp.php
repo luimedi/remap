@@ -2,9 +2,9 @@
 
 namespace Tests\RecursivePropertyTest;
 
-use Luimedi\Remap\Attribute\PropertyMapper;
-use Luimedi\Remap\Attribute\MapProperty;
 use Luimedi\Remap\Attribute\Cast\CastTransformer;
+use Luimedi\Remap\Attribute\MapProperty;
+use Luimedi\Remap\Attribute\PropertyMapper;
 
 #[PropertyMapper]
 class RecursiveOutputProp

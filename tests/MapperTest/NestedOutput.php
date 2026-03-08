@@ -10,6 +10,7 @@ class NestedOutput
 {
     public function __construct(
         #[MapProperty(source: 'body')]
-        public string $body
-    ) {}
+        public string $body,
+    ) {
+    }
 }

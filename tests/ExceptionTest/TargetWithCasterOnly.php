@@ -10,6 +10,7 @@ class TargetWithCasterOnly
 {
     public function __construct(
         #[CastDefault(default: 'fallback')]
-        public string $value
-    ) {}
+        public string $value,
+    ) {
+    }
 }

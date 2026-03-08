@@ -2,8 +2,8 @@
 
 namespace Tests\RecursivePropertyTest;
 
-use PHPUnit\Framework\TestCase;
 use Luimedi\Remap\Mapper;
+use PHPUnit\Framework\TestCase;
 use Tests\RecursiveTest\RecursiveInput;
 
 class RecursivePropertyTest extends TestCase

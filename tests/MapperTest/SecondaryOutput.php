@@ -15,5 +15,6 @@ class SecondaryOutput
         #[MapProperty(source: 'dates')]
         #[CastIterable(class: CastDateTime::class)]
         public array $dates,
-    ) {}
+    ) {
+    }
 }

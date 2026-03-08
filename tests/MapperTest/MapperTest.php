@@ -2,7 +2,6 @@
 
 namespace Tests\MapperTest;
 
-use DateTimeImmutable;
 use Luimedi\Remap\Mapper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -10,13 +9,13 @@ use PHPUnit\Framework\TestCase;
 class MapperTest extends TestCase
 {
     #[DataProvider('mappingInputProvider')]
-    public function testGeneralBinding(string $name, DateTimeImmutable $birthdate, string $expectedDate)
+    public function testGeneralBinding(string $name, \DateTimeImmutable $birthdate, string $expectedDate)
     {
         $mapper = new Mapper();
         $mapper->bind(Input::class, Output::class);
 
         $result = $mapper->map(new Input(name: $name, birthdate: $birthdate));
-        
+
         $this->assertInstanceOf(Output::class, $result);
         $this->assertSame($name, $result->name);
         $this->assertSame($expectedDate, $result->birthdate);
@@ -26,10 +25,10 @@ class MapperTest extends TestCase
     public static function mappingInputProvider(): array
     {
         return [
-            'basic date' => ['Luis', new DateTimeImmutable('1988-01-01'), '1988-01-01T00:00:00+00:00'],
-            'with time' => ['Ana', new DateTimeImmutable('1990-05-15 14:30:00'), '1990-05-15T14:30:00+00:00'],
-            'leap year' => ['Pedro', new DateTimeImmutable('2020-02-29'), '2020-02-29T00:00:00+00:00'],
-            'end of year' => ['Maria', new DateTimeImmutable('2025-12-31 23:59:59'), '2025-12-31T23:59:59+00:00'],
+            'basic date' => ['Luis', new \DateTimeImmutable('1988-01-01'), '1988-01-01T00:00:00+00:00'],
+            'with time' => ['Ana', new \DateTimeImmutable('1990-05-15 14:30:00'), '1990-05-15T14:30:00+00:00'],
+            'leap year' => ['Pedro', new \DateTimeImmutable('2020-02-29'), '2020-02-29T00:00:00+00:00'],
+            'end of year' => ['Maria', new \DateTimeImmutable('2025-12-31 23:59:59'), '2025-12-31T23:59:59+00:00'],
         ];
     }
 
@@ -40,7 +39,7 @@ class MapperTest extends TestCase
         $mapper->bind(Input::class, Output::class);
 
         $results = $mapper->mapAsIterable($inputs);
-        
+
         $this->assertIsArray($results);
         $this->assertCount($expectedCount, $results);
 
@@ -61,21 +60,21 @@ class MapperTest extends TestCase
         return [
             'two items' => [
                 [
-                    new Input(name: 'Luis', birthdate: new DateTimeImmutable('1988-01-01')),
-                    new Input(name: 'Ana', birthdate: new DateTimeImmutable('1990-05-15')),
+                    new Input(name: 'Luis', birthdate: new \DateTimeImmutable('1988-01-01')),
+                    new Input(name: 'Ana', birthdate: new \DateTimeImmutable('1990-05-15')),
                 ],
                 2,
             ],
             'single item' => [
-                [new Input(name: 'Solo', birthdate: new DateTimeImmutable('2000-01-01'))],
+                [new Input(name: 'Solo', birthdate: new \DateTimeImmutable('2000-01-01'))],
                 1,
             ],
             'empty array' => [[], 0],
             'three items' => [
                 [
-                    new Input(name: 'First', birthdate: new DateTimeImmutable('2020-01-01')),
-                    new Input(name: 'Second', birthdate: new DateTimeImmutable('2021-02-02')),
-                    new Input(name: 'Third', birthdate: new DateTimeImmutable('2022-03-03')),
+                    new Input(name: 'First', birthdate: new \DateTimeImmutable('2020-01-01')),
+                    new Input(name: 'Second', birthdate: new \DateTimeImmutable('2021-02-02')),
+                    new Input(name: 'Third', birthdate: new \DateTimeImmutable('2022-03-03')),
                 ],
                 3,
             ],
@@ -85,14 +84,14 @@ class MapperTest extends TestCase
     public function testCastIterable()
     {
         $mapper = new Mapper();
-        
+
         $mapper
             ->bind(SecondaryInput::class, SecondaryOutput::class);
 
         $input = new SecondaryInput(dates: [
-            new DateTimeImmutable('2020-01-01'),
-            new DateTimeImmutable('2021-02-02'),
-            new DateTimeImmutable('2022-03-03'),
+            new \DateTimeImmutable('2020-01-01'),
+            new \DateTimeImmutable('2021-02-02'),
+            new \DateTimeImmutable('2022-03-03'),
         ]);
 
         $result = $mapper->map($input);
@@ -100,7 +99,7 @@ class MapperTest extends TestCase
         $this->assertInstanceOf(SecondaryOutput::class, $result);
         $this->assertIsArray($result->dates);
         $this->assertCount(3, $result->dates);
-        
+
         $this->assertSame('2020-01-01T00:00:00+00:00', $result->dates[0]);
         $this->assertSame('2021-02-02T00:00:00+00:00', $result->dates[1]);
         $this->assertSame('2022-03-03T00:00:00+00:00', $result->dates[2]);

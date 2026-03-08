@@ -10,7 +10,7 @@ class TargetThatThrowsInConstructor
 {
     public function __construct(
         #[MapProperty(source: 'data')]
-        public string $data
+        public string $data,
     ) {
         throw new \RuntimeException('Constructor error');
     }

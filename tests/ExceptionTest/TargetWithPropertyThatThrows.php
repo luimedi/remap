@@ -11,6 +11,7 @@ class TargetWithPropertyThatThrows
     public function __construct(
         #[MapProperty(source: 'data')]
         #[ThrowingCaster]
-        public string $data
-    ) {}
+        public string $data,
+    ) {
+    }
 }

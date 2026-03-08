@@ -7,11 +7,6 @@ use Luimedi\Remap\Mapper;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-use Tests\CastDefaultTest\Input;
-use Tests\CastDefaultTest\OutputNonStrict;
-use Tests\CastDefaultTest\OutputStrict;
-use Tests\CastDefaultTest\OutputCasterMissing;
-
 class CastDefaultTest extends TestCase
 {
     #[DataProvider('nonStrictEmptyValuesProvider')]

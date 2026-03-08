@@ -2,10 +2,7 @@
 
 namespace Luimedi\Remap;
 
-use ArrayIterator;
 use Luimedi\Remap\Contracts\ContextInterface;
-
-use Traversable;
 
 class Context implements ContextInterface
 {
@@ -36,9 +33,9 @@ class Context implements ContextInterface
         return count($this->data);
     }
 
-    public function getIterator(): Traversable
+    public function getIterator(): \Traversable
     {
-        return new ArrayIterator($this->data);
+        return new \ArrayIterator($this->data);
     }
 
     public function offsetExists(mixed $offset): bool
