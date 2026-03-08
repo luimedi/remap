@@ -1,0 +1,13 @@
+# Run Pint on changed files (dirty mode) so only modified files are processed
+./vendor/bin/pint --dirty || {
+  echo "Pint failed or returned an error. Aborting commit."
+  echo "Run './vendor/bin/pint' locally to see/fix issues."
+  exit 1
+}
+
+# Re-add any files Pint modified so the commit includes the fixes
+git add -A
+
+echo "Pint formatted changed files and re-staged fixes."
+
+exit 0
