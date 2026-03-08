@@ -45,5 +45,10 @@
                 "git add -A"
             ]
         }
+    },
+    "config": { 
+        "platform": { 
+            "php": "8.3.30" 
+        } 
     }
 }
