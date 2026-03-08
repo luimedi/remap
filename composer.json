@@ -25,9 +25,25 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^12",
-        "laravel/pint": "^1.27"
+        "laravel/pint": "^1.27",
+        "brainmaestro/composer-git-hooks": "^3.0"
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "cghooks": "vendor/bin/cghooks",
+        "post-install-cmd": [
+            "cghooks add --ignore-lock"
+        ],
+        "post-update-cmd": [
+            "cghooks update"
+        ]
+    },
+    "extra": {
+        "hooks": {
+            "pre-commit": [
+                "./vendor/bin/pint --dirty",
+                "git add -A"
+            ]
+        }
     }
 }
