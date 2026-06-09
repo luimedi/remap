@@ -23,11 +23,13 @@ final class Data
     {
         if (is_array($target) && array_key_exists($segment, $target)) {
             $found = true;
+
             return $target[$segment];
         }
 
         if ($target instanceof \ArrayAccess && $target->offsetExists($segment)) {
             $found = true;
+
             return $target[$segment];
         }
 
@@ -36,6 +38,7 @@ final class Data
         }
 
         $found = false;
+
         return $default;
     }
 
@@ -47,25 +50,30 @@ final class Data
             $prop = $ref->getProperty($segment);
             if ($prop->isInitialized($target)) {
                 $found = true;
+
                 return $prop->getValue($target);
             }
             $found = false;
+
             return $default;
         }
 
         if (isset($target->$segment) || property_exists($target, $segment)) {
             $found = true;
+
             return $target->$segment;
         }
 
         if (method_exists($target, '__get')) {
             try {
                 $val = $target->$segment;
-                if ($val === null && !(method_exists($target, '__isset') && $target->__isset($segment))) {
+                if (null === $val && !(method_exists($target, '__isset') && $target->__isset($segment))) {
                     $found = false;
+
                     return $default;
                 }
                 $found = true;
+
                 return $val;
             } catch (\Throwable) {
                 // fall through to not found
@@ -73,6 +81,7 @@ final class Data
         }
 
         $found = false;
+
         return $default;
     }
 }
