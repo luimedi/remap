@@ -727,6 +727,13 @@ With `TransformerInterface` you gain full control over the instantiation phase
 and can implement advanced mapping rules while still leveraging the rest of the
 attribute-driven system.
 
+## Development
+
+This project uses [Laravel Pint](https://laravel.com/docs/10.x/pint) to maintain a consistent code style (using the `symfony` preset).
+
+- **Format code**: Run `composer pint` to automatically fix code style issues.
+- **Check style**: Run `composer pint:test` to check for style issues without modifying files.
+
 ## License and credits
 
 - **License:** This project is released under the MIT License. See the `LICENSE` file for full terms.
