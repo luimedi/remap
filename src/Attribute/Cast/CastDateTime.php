@@ -15,14 +15,16 @@ class CastDateTime implements CastInterface
 
     public function cast(mixed $value, ContextInterface $context, MappingTargetInterface $mappingTarget): mixed
     {
+        $format = $this->format ?? \DateTime::ATOM;
+
         if ($value instanceof \DateTimeInterface) {
-            return $value->format(\DateTime::ATOM);
+            return $value->format($format);
         }
 
         if (is_string($value)) {
             $date = new \DateTime($value);
 
-            return $date->format(\DateTime::ATOM);
+            return $date->format($format);
         }
 
         return null;
