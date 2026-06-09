@@ -104,4 +104,57 @@ class MapperTest extends TestCase
         $this->assertSame('2021-02-02T00:00:00+00:00', $result->dates[1]);
         $this->assertSame('2022-03-03T00:00:00+00:00', $result->dates[2]);
     }
+
+    public function testCastIterableThrowsOnNonIterable()
+    {
+        $mapper = new Mapper();
+        $mapper->bind(SecondaryInputLoose::class, OutputNonIterable::class);
+
+        $input = new SecondaryInputLoose(dates: 'not-an-iterable');
+
+        $this->expectException(\Luimedi\Remap\Exception\MappingExecutionException::class);
+        $this->expectExceptionMessage('Value must be iterable to be cast as iterable.');
+        $mapper->map($input);
+    }
+
+    public function testCastIterableThrowsOnInvalidCaster()
+    {
+        $mapper = new Mapper();
+        $mapper->bind(SecondaryInput::class, OutputInvalidCaster::class);
+
+        $input = new SecondaryInput(dates: [new \DateTimeImmutable()]);
+
+        $this->expectException(\Luimedi\Remap\Exception\MappingExecutionException::class);
+        $this->expectExceptionMessage('must implement Luimedi\Remap\Contracts\CastInterface');
+        $mapper->map($input);
+    }
+}
+
+class SecondaryInputLoose
+{
+    public function __construct(public $dates)
+    {
+    }
+}
+
+#[\Luimedi\Remap\Attribute\ConstructorMapper]
+class OutputNonIterable
+{
+    public function __construct(
+        #[\Luimedi\Remap\Attribute\MapProperty]
+        #[\Luimedi\Remap\Attribute\Cast\CastIterable(class: \Luimedi\Remap\Attribute\Cast\CastDateTime::class)]
+        public array $dates,
+    ) {
+    }
+}
+
+#[\Luimedi\Remap\Attribute\ConstructorMapper]
+class OutputInvalidCaster
+{
+    public function __construct(
+        #[\Luimedi\Remap\Attribute\MapProperty]
+        #[\Luimedi\Remap\Attribute\Cast\CastIterable(class: \stdClass::class)]
+        public array $dates,
+    ) {
+    }
 }

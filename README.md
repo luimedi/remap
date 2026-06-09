@@ -243,6 +243,13 @@ class AppendSuffix implements CastInterface
 }
 ```
 
+## Development
+
+This project uses [Laravel Pint](https://laravel.com/docs/10.x/pint) to maintain a consistent code style (using the `symfony` preset).
+
+- **Format code**: Run `composer pint` to automatically fix code style issues.
+- **Check style**: Run `composer pint:test` to check for style issues without modifying files.
+
 ## License
 
 MIT. See `LICENSE`.
