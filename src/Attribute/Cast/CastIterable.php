@@ -15,7 +15,20 @@ class CastIterable implements CastInterface
 
     public function cast(mixed $value, ContextInterface $context, MappingTargetInterface $mappingTarget): mixed
     {
+        if (!class_exists($this->class)) {
+            throw new \InvalidArgumentException(sprintf('Caster class "%s" does not exist.', $this->class));
+        }
+
         $caster = new $this->class(...$this->args);
+
+        if (!$caster instanceof CastInterface) {
+            throw new \InvalidArgumentException(sprintf('Caster class "%s" must implement %s.', $this->class, CastInterface::class));
+        }
+
+        if (!is_iterable($value)) {
+            throw new \InvalidArgumentException('Value must be iterable to be cast as iterable.');
+        }
+
         $output = [];
 
         foreach ($value as $item) {
